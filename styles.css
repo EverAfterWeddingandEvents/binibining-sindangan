@@ -842,6 +842,9 @@ h1 .ch { display: inline-block; padding-bottom: .14em; margin-bottom: -.14em; }
   .hero::before { left: 30%; top: 50%; }
   h1 { font-size: clamp(3rem, 5.2vw, 4.6rem); }
   .music { width: 54px; height: 54px; }
+  /* Sit in the text column, centred under the date line, instead of the bottom of the screen */
+  .hero > .scroll-cue { position: relative; left: auto; bottom: auto; margin: 22px 0 0; }
+  .hero { padding-bottom: 60px; }
 }
 
 /* The letter unrolls like a scroll (scale, not clip-path, so the scroll observer can still see it) */
