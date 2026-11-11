@@ -470,7 +470,40 @@ h2 {
 .footer__links a:hover { color: var(--gold-light); text-decoration: underline; }
 .footer__fine { margin-top: 26px; font-size: .74rem; color: var(--muted); }
 
+/* ---------- Floating music button ---------- */
+.music {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  color: var(--gold-light);
+  background: radial-gradient(circle at 30% 25%, rgba(143, 15, 28, .95), rgba(18, 4, 10, .95));
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .55), 0 0 0 0 rgba(233, 196, 106, .5);
+  cursor: pointer;
+  transition: transform .2s ease, opacity .5s ease;
+}
+.music:hover { transform: scale(1.06); }
+.music:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 3px; }
+.js:not(.opened) .music { opacity: 0; pointer-events: none; }
+.music.is-playing { animation: pulse 2.4s ease-out infinite; }
+.music.is-playing .music__note { display: none; }
+.music__bars { display: none; align-items: flex-end; gap: 3px; height: 20px; }
+.music.is-playing .music__bars { display: flex; }
+.music__bars i { width: 3px; height: 100%; border-radius: 2px; background: currentColor; transform-origin: bottom; animation: bars 1s ease-in-out infinite; }
+.music__bars i:nth-child(2) { animation-delay: -.35s; }
+.music__bars i:nth-child(3) { animation-delay: -.7s; }
+.music__bars i:nth-child(4) { animation-delay: -.15s; }
+
 /* ---------- Motion ---------- */
+@keyframes bars { 0%, 100% { transform: scaleY(.3); } 50% { transform: scaleY(1); } }
+@keyframes pulse { 0% { box-shadow: 0 10px 28px rgba(0, 0, 0, .55), 0 0 0 0 rgba(233, 196, 106, .5); } 100% { box-shadow: 0 10px 28px rgba(0, 0, 0, .55), 0 0 0 16px rgba(233, 196, 106, 0); } }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 @keyframes cue { 0% { opacity: 0; transform: translateY(0); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(16px); } }
 @keyframes twinkle { 0%, 100% { opacity: .5; transform: scale(.9); } 50% { opacity: 1; transform: scale(1.15); } }
@@ -490,5 +523,6 @@ h2 {
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .music__bars i:nth-child(odd) { transform: scaleY(.55); }
   *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
 }

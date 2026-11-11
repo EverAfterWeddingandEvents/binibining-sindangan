@@ -16,7 +16,7 @@ const EVENT = {
   location: "Sound Check Lounge and Bar, Sindangan, Zamboanga del Norte",
   description:
     "Sponsors' Meeting and Fellowship with Hon. Glona G. Labadlabad, Municipal Mayor of Sindangan.\n" +
-    "Contact: Ever After Wedding & Events, (0945) 872 5810 / (065) 917 8385",
+    "Contact: Ever After Wedding & Events, (0915) 227 6737 / (065) 917 8385",
 };
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -38,6 +38,62 @@ const root = document.documentElement;
   // Links that point at a section (e.g. …/#rsvp) skip the curtain.
   if (location.hash && document.querySelector(location.hash)) open();
   else btn.focus({ preventScroll: true });
+})();
+
+/* ---- Floating background music ----
+   Plays assets/music.mp3 on a loop. It starts when the guest taps
+   "Open Invitation" (browsers only allow sound after a tap), and the
+   floating button pauses or resumes it. If the file is missing, the
+   button never appears. */
+(function music() {
+  const audio = document.getElementById("bgm");
+  const btn = document.getElementById("musicBtn");
+  let available = false;
+  let wanted = false; // the guest's choice: should music be on?
+
+  audio.volume = 0.6;
+
+  function render() {
+    const playing = !audio.paused;
+    btn.classList.toggle("is-playing", playing);
+    btn.setAttribute("aria-pressed", String(playing));
+    const label = playing ? "Pause background music" : "Play background music";
+    btn.setAttribute("aria-label", label);
+    btn.title = playing ? "Pause music" : "Play music";
+  }
+  function play() {
+    wanted = true;
+    if (!available) return;
+    audio.play().catch(() => {}).finally(render);
+  }
+  function pause() {
+    wanted = false;
+    audio.pause();
+  }
+
+  function ready() {
+    if (available) return;
+    available = true;
+    btn.hidden = false;
+    if (wanted) play();
+  }
+  audio.addEventListener("loadedmetadata", ready);
+  audio.addEventListener("error", () => {
+    available = false;
+    btn.hidden = true;
+  });
+  if (audio.readyState >= 1) ready();
+
+  audio.addEventListener("play", render);
+  audio.addEventListener("pause", render);
+  btn.addEventListener("click", () => (audio.paused ? play() : pause()));
+  document.getElementById("openBtn").addEventListener("click", play);
+
+  // Don't keep playing when the guest switches apps or tabs.
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) audio.pause();
+    else if (wanted && available) audio.play().catch(() => {});
+  });
 })();
 
 /* ---- Scroll reveal ---- */
@@ -268,7 +324,7 @@ const root = document.documentElement;
       console.error("RSVP failed:", err);
       status.classList.add("is-error");
       status.innerHTML =
-        'We couldn’t send your RSVP. Please try again, or call <a href="tel:+639458725810">(0945) 872 5810</a>.';
+        'We couldn’t send your RSVP. Please try again, or call <a href="tel:+639152276737">(0915) 227 6737</a>.';
       submitBtn.disabled = false;
       submitBtn.textContent = "Send RSVP";
     }
