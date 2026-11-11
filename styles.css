@@ -467,12 +467,12 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   margin-top: 22px;
-  opacity: .65;
+  opacity: .8;
 }
 .footer__credit span { font-size: .56rem; letter-spacing: .2em; white-space: nowrap; text-transform: uppercase; color: var(--muted); }
-.footer__credit img { width: 40px; height: auto; padding: 1px 2px; background: #fff; border-radius: 5px; }
+.footer__credit img { width: 64px; height: auto; }
 .footer__links {
   list-style: none;
   display: grid;
