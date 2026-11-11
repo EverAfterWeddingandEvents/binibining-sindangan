@@ -16,7 +16,8 @@ const EVENT = {
   location: "Sound Check Lounge and Bar, Sindangan, Zamboanga del Norte",
   description:
     "Sponsors' Meeting and Fellowship with Hon. Glona G. Labadlabad, Municipal Mayor of Sindangan.\n" +
-    "Contact: Ever After Wedding & Events, (0915) 227 6737 / (065) 917 8385",
+    "Hosted by the Local Government of Sindangan and the Binibining Sindangan 2026 Committee.\n" +
+    "Contact: (0915) 227 6737 / (065) 917 8385",
 };
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;

@@ -34,7 +34,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="assets/logo.png">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=4">
   <script>document.documentElement.classList.add('js', 'sealed');</script>
 </head>
 <body>
@@ -46,7 +46,8 @@
     <div class="curtain curtain--right" aria-hidden="true"></div>
     <div class="cover__content">
       <div class="statue statue--cover" role="img" aria-label="Binibining Sindangan 2026 golden statue"></div>
-      <p class="eyebrow">Binibining Sindangan 2026</p>
+      <p class="eyebrow">Municipality of Sindangan</p>
+      <p class="cover__pageant">Binibining Sindangan 2026</p>
       <p class="cover__title">You are invited</p>
       <button class="btn btn--gold" id="openBtn" type="button">Open Invitation</button>
     </div>
@@ -55,6 +56,10 @@
   <main id="invitation">
     <!-- Hero -->
     <header class="hero">
+      <p class="host">
+        <img src="assets/seal.png" alt="" width="360" height="356">
+        <span><b>Local Government of Sindangan</b><small>Zamboanga del Norte</small></span>
+      </p>
       <div class="statue statue--hero" aria-hidden="true"></div>
       <div class="wordmark" role="img" aria-label="Binibining Sindangan 2026"></div>
       <div class="ornament" aria-hidden="true"><span></span><i>✦</i><span></span></div>
@@ -105,7 +110,7 @@
         <div class="card reveal">
           <p class="card__label">Venue</p>
           <p class="card__value">Sound Check Lounge and Bar</p>
-          <p class="card__note">Sindangan</p>
+          <p class="card__note">Sindangan, Zamboanga del Norte</p>
         </div>
         <div class="card reveal">
           <p class="card__label">With</p>
@@ -193,14 +198,17 @@
     <!-- Footer -->
     <footer class="footer">
       <div class="ornament" aria-hidden="true"><span></span><i>✦</i><span></span></div>
-      <img class="footer__logo" src="assets/ever-after.jpg" alt="Ever After Wedding &amp; Events" width="480" height="387" loading="lazy">
+      <img class="footer__logo" src="assets/seal.png" alt="Official Seal of the Municipality of Sindangan" width="360" height="356" loading="lazy">
+      <p class="footer__brand gold-text">Municipality of Sindangan</p>
+      <p class="footer__sub">Local Government of Sindangan<br>Binibining Sindangan 2026 Committee</p>
       <ul class="footer__links">
         <li><span>Mobile</span><a href="tel:+639152276737">(0915) 227 6737</a></li>
         <li><span>Landline</span><a href="tel:+63659178385">(065) 917 8385</a></li>
         <li><span>Email</span><a href="mailto:bb.sindangan@gmail.com">bb.sindangan@gmail.com</a></li>
         <li><span>Facebook</span><a href="https://www.facebook.com/profile.php?id=100057436449824" target="_blank" rel="noopener">Binibining Sindangan</a></li>
       </ul>
-      <p class="footer__fine">Local Government of Sindangan · Binibining Sindangan 2026 Committee</p>
+      <p class="footer__fine">Sindangan, Zamboanga del Norte, Philippines</p>
+      <p class="footer__credit"><span>Event partner</span><img src="assets/ever-after.jpg" alt="Ever After Wedding &amp; Events" width="480" height="387" loading="lazy"></p>
     </footer>
   </main>
 
@@ -211,6 +219,6 @@
     <span class="music__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
   </button>
 
-  <script src="script.js" defer></script>
+  <script src="script.js?v=4" defer></script>
 </body>
 </html>
