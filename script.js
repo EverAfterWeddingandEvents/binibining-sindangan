@@ -85,7 +85,18 @@ const root = document.documentElement;
     queued = true;
     requestAnimationFrame(update);
   }, { passive: true });
-  window.addEventListener("resize", update);
+  // Keep the light rays centred on the statue's body, wherever the layout puts her.
+  const statue = hero.querySelector(".statue--hero");
+  function aimRays() {
+    hero.style.setProperty("--ray-x", (statue.offsetLeft + statue.offsetWidth * 0.49).toFixed(1) + "px");
+    hero.style.setProperty("--ray-y", (statue.offsetTop + statue.offsetHeight * 0.46).toFixed(1) + "px");
+  }
+  window.addEventListener("resize", () => {
+    aimRays();
+    update();
+  });
+  window.addEventListener("load", aimRays);
+  aimRays();
   update();
 })();
 

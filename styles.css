@@ -855,3 +855,9 @@ h1 .ch { display: inline-block; padding-bottom: .14em; margin-bottom: -.14em; }
 @media (min-width: 900px) and (min-height: 560px) {
   .hero::before { --ray: 98svh; }
 }
+
+/* Ray centre follows the statue (script.js sets --ray-x / --ray-y; these are the fallbacks) */
+.hero::before { left: var(--ray-x, 50%); top: var(--ray-y, 34%); }
+@media (min-width: 900px) and (min-height: 560px) {
+  .hero::before { left: var(--ray-x, 30%); top: var(--ray-y, 50%); }
+}
