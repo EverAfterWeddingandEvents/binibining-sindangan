@@ -35,10 +35,58 @@ const root = document.documentElement;
   btn.addEventListener("click", () => {
     window.scrollTo(0, 0);
     open();
+    // Gold dust bursts through as the curtain parts.
+    setTimeout(() => window.goldBurst && window.goldBurst(innerWidth / 2, innerHeight * 0.42, 90), 900);
   });
   // Links that point at a section (e.g. …/#rsvp) skip the curtain.
   if (location.hash && document.querySelector(location.hash)) open();
   else btn.focus({ preventScroll: true });
+})();
+
+/* ---- Title: split into letters so they can land one by one ---- */
+(function splitTitle() {
+  const h1 = document.querySelector(".hero h1");
+  const text = h1.textContent.trim();
+  h1.setAttribute("aria-label", text);
+  h1.classList.remove("gold-text"); // each letter carries the gold fill instead
+  h1.textContent = "";
+  let i = 0;
+  text.split(" ").forEach((word, w, all) => {
+    const wordEl = document.createElement("span");
+    wordEl.className = "word";
+    wordEl.setAttribute("aria-hidden", "true");
+    for (const ch of word) {
+      const el = document.createElement("span");
+      el.className = "ch gold-text";
+      el.style.setProperty("--i", i++);
+      el.textContent = ch;
+      wordEl.appendChild(el);
+    }
+    h1.appendChild(wordEl);
+    if (w < all.length - 1) h1.appendChild(document.createTextNode(" "));
+  });
+})();
+
+/* ---- Scroll: progress bar and hero parallax ---- */
+(function scrollFx() {
+  const hero = document.querySelector(".hero");
+  let queued = false;
+  function update() {
+    queued = false;
+    const y = window.scrollY;
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    root.style.setProperty("--scroll", max > 0 ? Math.min(1, y / max).toFixed(4) : "0");
+    if (reduceMotion) return;
+    root.classList.toggle("scrolled", y > 4);
+    hero.style.setProperty("--p", Math.min(1, y / hero.offsetHeight).toFixed(4));
+  }
+  window.addEventListener("scroll", () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(update);
+  }, { passive: true });
+  window.addEventListener("resize", update);
+  update();
 })();
 
 /* ---- Floating background music ----
@@ -52,7 +100,22 @@ const root = document.documentElement;
   let available = false;
   let wanted = false; // the guest's choice: should music be on?
 
-  audio.volume = 0.6;
+  const VOLUME = 0.6;
+  let fadeTimer;
+  // Ease the volume instead of cutting in and out. (iOS ignores volume changes; it just plays.)
+  function fadeTo(target, ms, done) {
+    clearInterval(fadeTimer);
+    const from = audio.volume;
+    const start = performance.now();
+    fadeTimer = setInterval(() => {
+      const k = Math.min(1, (performance.now() - start) / ms);
+      audio.volume = Math.max(0, Math.min(1, from + (target - from) * k));
+      if (k === 1) {
+        clearInterval(fadeTimer);
+        if (done) done();
+      }
+    }, 50);
+  }
 
   function render() {
     const playing = !audio.paused;
@@ -65,11 +128,12 @@ const root = document.documentElement;
   function play() {
     wanted = true;
     if (!available) return;
-    audio.play().catch(() => {}).finally(render);
+    if (audio.paused) audio.volume = 0;
+    audio.play().then(() => fadeTo(VOLUME, 3000)).catch(() => {}).finally(render);
   }
   function pause() {
     wanted = false;
-    audio.pause();
+    fadeTo(0, 600, () => audio.pause());
   }
 
   function ready() {
@@ -92,8 +156,10 @@ const root = document.documentElement;
 
   // Don't keep playing when the guest switches apps or tabs.
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) audio.pause();
-    else if (wanted && available) audio.play().catch(() => {});
+    if (document.hidden) {
+      clearInterval(fadeTimer);
+      audio.pause();
+    } else if (wanted && available) play();
   });
 })();
 
@@ -129,6 +195,17 @@ const root = document.documentElement;
   box.querySelectorAll("[data-unit]").forEach((el) => (cells[el.dataset.unit] = el));
   const pad = (n) => String(n).padStart(2, "0");
 
+  // Update a digit and replay its roll animation only when the value changes.
+  function set(el, value) {
+    if (el.textContent === value) return;
+    const first = el.textContent === "--";
+    el.textContent = value;
+    if (first || reduceMotion) return;
+    el.classList.remove("tick");
+    void el.offsetWidth;
+    el.classList.add("tick");
+  }
+
   function tick() {
     const now = Date.now();
     let diff = target - now;
@@ -139,10 +216,10 @@ const root = document.documentElement;
       return;
     }
     const s = Math.floor(diff / 1000);
-    cells.days.textContent = Math.floor(s / 86400);
-    cells.hours.textContent = pad(Math.floor((s % 86400) / 3600));
-    cells.minutes.textContent = pad(Math.floor((s % 3600) / 60));
-    cells.seconds.textContent = pad(s % 60);
+    set(cells.days, String(Math.floor(s / 86400)));
+    set(cells.hours, pad(Math.floor((s % 86400) / 3600)));
+    set(cells.minutes, pad(Math.floor((s % 3600) / 60)));
+    set(cells.seconds, pad(s % 60));
   }
   const timer = setInterval(tick, 1000);
   tick();
@@ -270,6 +347,7 @@ const root = document.documentElement;
     thanks.hidden = false;
     thanks.focus({ preventScroll: true });
     thanks.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+    if (attending && window.goldBurst) setTimeout(() => window.goldBurst(innerWidth / 2, innerHeight / 2, 120), 500);
   }
 
   function emailFallback(data) {
@@ -384,8 +462,46 @@ const root = document.documentElement;
         d.x = Math.random() * w;
       }
     }
+    // Burst particles: fly out, fall, fade.
+    for (let i = sparks.length - 1; i >= 0; i--) {
+      const s = sparks[i];
+      s.x += s.vx;
+      s.y += s.vy;
+      s.vx *= 0.985;
+      s.vy = s.vy * 0.985 + 0.045;
+      s.life -= s.decay;
+      if (s.life <= 0) {
+        sparks.splice(i, 1);
+        continue;
+      }
+      ctx.globalAlpha = Math.min(1, s.life);
+      ctx.fillStyle = s.color;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
     ctx.globalAlpha = 1;
   }
+
+  const sparks = [];
+  const SPARK_COLORS = ["#fff1c2", "#f6d98b", "#e9c46a", "#c9962f"];
+  window.goldBurst = (x, y, count) => {
+    if (reduceMotion) return;
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 6 + 1.5;
+      sparks.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 1.5,
+        r: Math.random() * 2.2 + 0.6,
+        life: 1.2,
+        decay: Math.random() * 0.012 + 0.008,
+        color: SPARK_COLORS[(Math.random() * SPARK_COLORS.length) | 0],
+      });
+    }
+  };
 
   function loop(t) {
     draw(t);

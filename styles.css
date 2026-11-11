@@ -551,3 +551,318 @@ h2 {
   .music__bars i:nth-child(odd) { transform: scaleY(.55); }
   *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; transition-delay: 0s !important; }
 }
+
+/* =========================================================
+   CINEMATIC LAYER
+   Stage atmosphere, the opening sequence, and scroll-driven
+   motion. Everything here is decoration: with reduced motion
+   (or no JavaScript) the page shows its finished state.
+   ========================================================= */
+
+/* ---------- Atmosphere: vignette, film grain, letterbox ---------- */
+.fx { position: fixed; pointer-events: none; }
+.fx-vignette {
+  inset: 0;
+  z-index: 3;
+  background: radial-gradient(120% 85% at 50% 45%, transparent 55%, rgba(0, 0, 0, .55) 100%);
+}
+.fx-grain {
+  inset: -60%;
+  z-index: 4;
+  opacity: .075;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain .9s steps(6) infinite;
+}
+.fx-bar {
+  left: 0;
+  right: 0;
+  z-index: 12;
+  height: clamp(16px, 5vh, 44px);
+  background: #000;
+  transition: transform 1.4s cubic-bezier(.7, 0, .2, 1) 1.5s;
+}
+.fx-bar--top { top: 0; }
+.fx-bar--bottom { bottom: 0; }
+html:not(.js) .fx-bar, .opened .fx-bar--top { transform: translateY(-101%); }
+html:not(.js) .fx-bar--bottom, .opened .fx-bar--bottom { transform: translateY(101%); }
+
+.progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold-light));
+  transform: scaleX(var(--scroll, 0));
+  transform-origin: left;
+  box-shadow: 0 0 10px rgba(233, 196, 106, .7);
+  pointer-events: none;
+}
+
+/* ---------- Opening sequence ---------- */
+.js .cover { transition: visibility 0s linear 3s; }
+.curtain {
+  transition: transform 2.4s cubic-bezier(.77, 0, .18, 1) .35s;
+  transform-origin: top center;
+}
+.cover.is-open .curtain--left { transform: translateX(-103%) skewX(4deg); }
+.cover.is-open .curtain--right { transform: translateX(103%) skewX(-4deg); }
+
+/* Stage spotlights sweeping across the closed curtain */
+.beam {
+  position: absolute;
+  top: -12%;
+  width: 46vmax;
+  height: 150vmax;
+  background: linear-gradient(180deg, rgba(255, 236, 180, .34), rgba(255, 236, 180, .07) 45%, transparent 75%);
+  clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%);
+  filter: blur(14px);
+  transform-origin: 50% 0;
+  pointer-events: none;
+  transition: opacity .8s ease;
+}
+.beam--a { left: 4%; animation: sweep-a 9s ease-in-out infinite; }
+.beam--b { right: 4%; animation: sweep-b 11s ease-in-out infinite; }
+.cover.is-open .beam { opacity: 0; }
+
+.cover__content { transition: opacity .6s ease, transform .9s cubic-bezier(.5, 0, .2, 1), filter .6s ease; }
+.cover.is-open .cover__content { opacity: 0; transform: scale(1.12); filter: blur(10px); }
+.statue--cover { animation: breathe 4.5s ease-in-out infinite; }
+
+/* Burst of gold light as the curtain parts */
+.cover__flash {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60vmax;
+  height: 60vmax;
+  margin: -30vmax 0 0 -30vmax;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 244, 205, .95), rgba(233, 196, 106, .5) 30%, transparent 68%);
+  opacity: 0;
+  transform: scale(.1);
+  pointer-events: none;
+}
+.cover.is-open .cover__flash { animation: flash 2.2s ease-out .25s both; }
+
+/* Light sweeping across the gold button */
+.btn--gold { position: relative; overflow: hidden; }
+.btn--gold::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .75) 50%, transparent 65%);
+  transform: translateX(-120%);
+  animation: glint 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ---------- Hero: light rays, shine, parallax ---------- */
+.hero { overflow: hidden; --p: 0; }
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 34%;
+  left: 50%;
+  width: 150vmax;
+  height: 150vmax;
+  margin: -75vmax 0 0 -75vmax;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 226, 150, .12) 0deg 5deg, transparent 5deg 17deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0, rgba(0, 0, 0, .5) 22%, transparent 52%);
+  mask-image: radial-gradient(circle, #000 0, rgba(0, 0, 0, .5) 22%, transparent 52%);
+  animation: rays 120s linear infinite;
+  pointer-events: none;
+}
+.js .hero::before { opacity: 0 !important; transform: none; }
+.js.opened .hero::before { opacity: calc(1 - var(--p) * 1.2) !important; transition: opacity 2.6s ease 1.2s; }
+.js.opened.scrolled .hero::before { transition: none; }
+
+/* A highlight that glides across the statue and the 3D title, masked to their shape */
+.statue--hero, .hero .wordmark { position: relative; }
+.statue--hero::after, .hero .wordmark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 42%, rgba(255, 255, 255, .9) 50%, transparent 58%) no-repeat;
+  background-size: 300% 100%;
+  background-position: 150% 0;
+  -webkit-mask: url("assets/logo.png") left center / auto 100% no-repeat;
+  mask: url("assets/logo.png") left center / auto 100% no-repeat;
+  animation: shine 6.5s ease-in-out 3.4s infinite;
+  pointer-events: none;
+}
+.hero .wordmark::after {
+  -webkit-mask-position: right center;
+  mask-position: right center;
+  animation-delay: 4.1s;
+}
+
+/* Parallax: --p runs 0 → 1 as the hero scrolls away */
+.statue--hero { translate: 0 calc(var(--p) * 70px); scale: calc(1 + var(--p) * .08); }
+.hero .wordmark { translate: 0 calc(var(--p) * 38px); }
+.host { translate: 0 calc(var(--p) * -24px); }
+
+/* Entrance: each piece drifts up out of soft focus after the curtain parts */
+.js .hero > * { opacity: 0; transform: translateY(34px) scale(.97); filter: blur(12px); }
+.js.opened .hero > * {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition: opacity 1.3s ease, transform 1.5s cubic-bezier(.2, .7, .2, 1), filter 1.3s ease;
+}
+.js .hero > .statue--hero { filter: blur(12px) brightness(2.2); }
+.js.opened .hero > .statue--hero { filter: drop-shadow(0 0 44px rgba(233, 196, 106, .34)); transition-duration: 1.8s, 1.9s, 1.8s; }
+.js.opened .hero > :nth-child(1) { transition-delay: 2.2s; }
+.js.opened .hero > :nth-child(2) { transition-delay: 1.1s; }
+.js.opened .hero > :nth-child(3) { transition-delay: 1.7s; }
+.js.opened .hero > :nth-child(4) { transition-delay: 2.3s; }
+.js.opened .hero > :nth-child(5) { transition-delay: 0s; }
+.js.opened .hero > :nth-child(6) { transition-delay: 3.3s; }
+.js.opened .hero > :nth-child(7) { transition-delay: 3.6s; }
+.js.opened .hero > :nth-child(8) { transition-delay: 4.1s; }
+
+/* Title letters land one by one (script.js splits the heading) */
+.js .hero > h1 { opacity: 1; transform: none; filter: none; }
+h1 .word { display: inline-block; white-space: nowrap; }
+h1 .ch { display: inline-block; padding-bottom: .14em; margin-bottom: -.14em; }
+.js h1 .ch { opacity: 0; transform: translateY(.55em) rotate(8deg) scale(1.25); filter: blur(8px); }
+.js.opened h1 .ch {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition: opacity .9s ease, transform 1s cubic-bezier(.2, .8, .2, 1), filter .9s ease;
+  transition-delay: calc(2.5s + var(--i) * 55ms);
+}
+
+/* ---------- Scroll reveals ---------- */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(46px) scale(.975);
+  filter: blur(9px);
+  transition: opacity 1.1s ease, transform 1.2s cubic-bezier(.2, .7, .2, 1), filter 1.1s ease, clip-path 1.5s cubic-bezier(.6, 0, .2, 1);
+}
+.js .reveal.is-in { opacity: 1; transform: none; filter: none; }
+
+/* Section titles: the label tightens into place and a gold rule draws itself */
+.js .section__head .eyebrow { letter-spacing: .7em; transition: letter-spacing 1.6s cubic-bezier(.2, .7, .2, 1) .1s; }
+.js .section__head.is-in .eyebrow { letter-spacing: .32em; }
+.section__head h2::after {
+  content: "";
+  display: block;
+  width: 120px;
+  height: 1px;
+  margin: 14px auto 0;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  transition: transform 1.4s cubic-bezier(.2, .7, .2, 1) .5s;
+}
+.js .section__head h2::after { transform: scaleX(0); }
+.js .section__head.is-in h2::after { transform: scaleX(1); }
+
+/* The letter unrolls from the top, then its paragraphs settle in */
+.js .letter.reveal { clip-path: inset(0 0 100% 0); transform: none; filter: none; opacity: 1; }
+.js .letter.reveal.is-in { clip-path: inset(0 0 0 0); }
+.js .letter > * { opacity: 0; transform: translateY(14px); transition: opacity .9s ease, transform .9s ease; }
+.js .letter.is-in > * { opacity: 1; transform: none; }
+.js .letter.is-in > :nth-child(1) { transition-delay: .5s; }
+.js .letter.is-in > :nth-child(2) { transition-delay: .75s; }
+.js .letter.is-in > :nth-child(3) { transition-delay: 1s; }
+.js .letter.is-in > :nth-child(4) { transition-delay: 1.25s; }
+.js .letter.is-in > :nth-child(5) { transition-delay: 1.5s; }
+.js .letter.is-in > :nth-child(6) { transition-delay: 1.8s; }
+
+/* Detail cards tip forward into view */
+.js .card.reveal { transform: perspective(800px) rotateX(-38deg) translateY(36px); transform-origin: 50% 0; }
+.js .card.reveal.is-in { transform: none; }
+.card { transition: border-color .3s ease, box-shadow .3s ease; }
+.card:hover { border-color: var(--gold); box-shadow: 0 0 34px rgba(233, 196, 106, .18); }
+
+/* Countdown digits roll when they change */
+.countdown b { overflow: hidden; padding-bottom: .04em; }
+.countdown b.tick { animation: roll .55s cubic-bezier(.2, .8, .2, 1); }
+
+.thanks:not([hidden]) { animation: arrive 1s cubic-bezier(.2, .8, .2, 1); }
+
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-4%, 3%); }
+  40% { transform: translate(3%, -5%); }
+  60% { transform: translate(-6%, -2%); }
+  80% { transform: translate(5%, 4%); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes sweep-a { 0%, 100% { transform: rotate(-24deg); } 50% { transform: rotate(-4deg); } }
+@keyframes sweep-b { 0%, 100% { transform: rotate(22deg); } 50% { transform: rotate(2deg); } }
+@keyframes breathe {
+  0%, 100% { filter: drop-shadow(0 10px 24px rgba(0, 0, 0, .5)) drop-shadow(0 0 0 rgba(233, 196, 106, 0)); }
+  50% { filter: drop-shadow(0 10px 24px rgba(0, 0, 0, .5)) drop-shadow(0 0 26px rgba(233, 196, 106, .55)); }
+}
+@keyframes flash {
+  0% { opacity: 0; transform: scale(.1); }
+  22% { opacity: 1; }
+  100% { opacity: 0; transform: scale(3.4); }
+}
+@keyframes glint { 0%, 55% { transform: translateX(-120%); } 85%, 100% { transform: translateX(120%); } }
+@keyframes rays { to { transform: rotate(360deg); } }
+@keyframes shine { 0%, 62% { background-position: 150% 0; } 100% { background-position: -50% 0; } }
+@keyframes roll { 0% { transform: translateY(-55%); opacity: 0; } 100% { transform: none; opacity: 1; } }
+@keyframes arrive { 0% { opacity: 0; transform: scale(.92); filter: blur(8px); } 100% { opacity: 1; transform: none; filter: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-grain, .beam, .cover__flash, .btn--gold::after, .statue--hero::after, .hero .wordmark::after { display: none; }
+  .fx-bar { transition: none; }
+  .statue--hero, .hero .wordmark, .host { translate: none; scale: none; }
+}
+
+/* ---------- Hero framing: the whole title card fits one screen ---------- */
+.hero { padding: 34px 20px 76px; gap: 8px; }
+.host { margin-bottom: 4px; }
+.statue--hero { height: clamp(150px, 23svh, 300px); }
+.hero .wordmark { width: min(74vw, 30svh, 380px); }
+.hero .ornament { margin: 2px auto; }
+.hero::before { background: repeating-conic-gradient(from 0deg, rgba(255, 226, 150, .085) 0deg 5deg, transparent 5deg 17deg); }
+.music { width: 46px; height: 46px; }
+
+/* Wide screens: statue on the left like a film poster, title card on the right */
+@media (min-width: 900px) and (min-height: 560px) {
+  .hero {
+    display: grid;
+    grid-template-columns: auto minmax(0, 600px);
+    grid-auto-rows: min-content;
+    column-gap: clamp(40px, 6vw, 110px);
+    row-gap: 12px;
+    justify-content: center;
+    align-content: center;
+    justify-items: center;
+    padding: 60px 40px 90px;
+  }
+  .hero > * { grid-column: 2; }
+  .hero > .statue--hero { grid-column: 1; grid-row: 1 / span 7; align-self: center; height: min(66svh, 600px); }
+  .hero .wordmark { width: min(400px, 44svh); }
+  .hero::before { left: 30%; top: 50%; }
+  h1 { font-size: clamp(3rem, 5.2vw, 4.6rem); }
+  .music { width: 54px; height: 54px; }
+}
+
+/* The letter unrolls like a scroll (scale, not clip-path, so the scroll observer can still see it) */
+.js .letter.reveal { clip-path: none; transform: scaleY(.03); transform-origin: 50% 0; opacity: 0; }
+.js .letter.reveal.is-in { transform: none; opacity: 1; transition: transform 1.3s cubic-bezier(.6, 0, .2, 1), opacity .4s ease; }
+.js .letter.is-in > :nth-child(1) { transition-delay: 1s; }
+.js .letter.is-in > :nth-child(2) { transition-delay: 1.2s; }
+.js .letter.is-in > :nth-child(3) { transition-delay: 1.4s; }
+.js .letter.is-in > :nth-child(4) { transition-delay: 1.6s; }
+.js .letter.is-in > :nth-child(5) { transition-delay: 1.8s; }
+.js .letter.is-in > :nth-child(6) { transition-delay: 2.1s; }
+
+/* Light rays sized to the hero so they fade out before its bottom edge */
+.hero::before {
+  --ray: 126svh;
+  width: var(--ray);
+  height: var(--ray);
+  margin: calc(var(--ray) / -2) 0 0 calc(var(--ray) / -2);
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 0, rgba(0, 0, 0, .55) 35%, transparent 96%);
+  mask-image: radial-gradient(circle closest-side, #000 0, rgba(0, 0, 0, .55) 35%, transparent 96%);
+}
+@media (min-width: 900px) and (min-height: 560px) {
+  .hero::before { --ray: 98svh; }
+}

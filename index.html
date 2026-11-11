@@ -34,16 +34,26 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="assets/logo.png">
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="styles.css?v=8">
   <script>document.documentElement.classList.add('js', 'sealed');</script>
 </head>
 <body>
   <canvas id="sparkles" aria-hidden="true"></canvas>
 
+  <!-- Cinematic atmosphere: vignette, film grain, letterbox bars, scroll progress -->
+  <div class="fx fx-vignette" aria-hidden="true"></div>
+  <div class="fx fx-grain" aria-hidden="true"></div>
+  <div class="fx fx-bar fx-bar--top" aria-hidden="true"></div>
+  <div class="fx fx-bar fx-bar--bottom" aria-hidden="true"></div>
+  <div class="progress" aria-hidden="true"></div>
+
   <!-- Opening curtain -->
   <div class="cover" id="cover">
     <div class="curtain curtain--left" aria-hidden="true"></div>
     <div class="curtain curtain--right" aria-hidden="true"></div>
+    <div class="beam beam--a" aria-hidden="true"></div>
+    <div class="beam beam--b" aria-hidden="true"></div>
+    <div class="cover__flash" aria-hidden="true"></div>
     <div class="cover__content">
       <div class="statue statue--cover" role="img" aria-label="Binibining Sindangan 2026 golden statue"></div>
       <p class="eyebrow">Municipality of Sindangan</p>
@@ -219,6 +229,6 @@
     <span class="music__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
   </button>
 
-  <script src="script.js?v=4" defer></script>
+  <script src="script.js?v=6" defer></script>
 </body>
 </html>
