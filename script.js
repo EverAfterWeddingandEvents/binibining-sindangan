@@ -23,6 +23,76 @@ const EVENT = {
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const root = document.documentElement;
 
+/* ---- Seal flight ----
+   The statue artwork holds the municipal seal. After the curtain opens, a copy of
+   that seal lifts out of her hand, spins up into the empty slot of the
+   "Local Government of Sindangan" badge, and then the badge unfolds its name. */
+(function sealFlight() {
+  const host = document.querySelector(".host");
+  const slot = host.querySelector("img");
+  const statue = document.querySelector(".statue--hero");
+  if (reduceMotion || !Element.prototype.animate) return; // badge simply shows as is
+  root.classList.add("seal-anim");
+
+  // Where the seal sits inside the statue artwork (fractions of the statue box).
+  const SEAL = { x: 0.2586, y: 0.1699, size: 0.1454 };
+  let started = false;
+
+  function finish() {
+    host.classList.add("is-seated");
+    setTimeout(() => {
+      host.classList.add("is-named");
+      setTimeout(() => host.classList.add("is-done"), 1800);
+    }, 350);
+  }
+
+  function fly() {
+    const r = statue.getBoundingClientRect();
+    const t = slot.getBoundingClientRect();
+    if (!r.height || !t.width) return finish();
+    const d = r.height * SEAL.size;
+    const sx = r.left + r.width * SEAL.x;
+    const sy = r.top + r.height * SEAL.y;
+    const tx = t.left + t.width / 2;
+    const ty = t.top + t.height / 2;
+    const dx = tx - sx;
+    const dy = ty - sy;
+    const s = t.width / d;
+
+    const el = document.createElement("img");
+    el.src = slot.src;
+    el.alt = "";
+    el.className = "seal-fly";
+    el.style.width = el.style.height = d + "px";
+    el.style.left = sx - d / 2 + window.scrollX + "px";
+    el.style.top = sy - d / 2 + window.scrollY + "px";
+    document.body.appendChild(el);
+    if (window.goldBurst) window.goldBurst(sx, sy, 26);
+
+    const anim = el.animate(
+      [
+        { transform: "translate(0, 0) scale(1) rotateY(0deg)", opacity: 0 },
+        { transform: "translate(0, -10px) scale(1.18) rotateY(0deg)", opacity: 1, offset: 0.14 },
+        { transform: `translate(${dx * 0.3}px, ${dy * 0.62}px) scale(${(1 + s) * 0.62}) rotateY(360deg)`, opacity: 1, offset: 0.58 },
+        { transform: `translate(${dx}px, ${dy}px) scale(${s}) rotateY(720deg)`, opacity: 1 },
+      ],
+      { duration: 1800, easing: "cubic-bezier(.45, 0, .25, 1)", fill: "forwards" }
+    );
+    anim.onfinish = () => {
+      finish();
+      if (window.goldBurst) window.goldBurst(tx, ty, 40);
+      el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: "forwards" }).onfinish = () => el.remove();
+    };
+  }
+
+  // Called by the curtain once it opens; waits for the statue to finish arriving.
+  window.sealFlight = () => {
+    if (started) return;
+    started = true;
+    setTimeout(fly, 3200);
+  };
+})();
+
 /* ---- Opening curtain ---- */
 (function cover() {
   const cover = document.getElementById("cover");
@@ -31,6 +101,7 @@ const root = document.documentElement;
     cover.classList.add("is-open");
     root.classList.remove("sealed");
     root.classList.add("opened");
+    if (window.sealFlight) window.sealFlight();
   };
   btn.addEventListener("click", () => {
     window.scrollTo(0, 0);
