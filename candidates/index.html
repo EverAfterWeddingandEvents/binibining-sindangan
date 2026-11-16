@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Top 20 Candidates | Binibining Sindangan 2026</title>
+  <meta name="description" content="For the Top 20 candidates of Binibining Sindangan 2026: your schedule of activities and attires, and the candidate form for your information, talent music and LED backdrop.">
+  <meta name="theme-color" content="#1a0508">
+  <!-- This page is for the candidates only, so it stays out of search results -->
+  <meta name="robots" content="noindex">
+
+  <link rel="canonical" href="https://binibining-sindangan.everafterweddingsandevent.com/candidates/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Binibining Sindangan 2026">
+  <meta property="og:locale" content="en_PH">
+  <meta property="og:url" content="https://binibining-sindangan.everafterweddingsandevent.com/candidates/">
+  <meta property="og:title" content="Top 20 Candidates | Binibining Sindangan 2026">
+  <meta property="og:description" content="Schedule of activities and attires, and the candidate form for your information, talent music and LED backdrop.">
+  <meta property="og:image" content="https://binibining-sindangan.everafterweddingsandevent.com/assets/icon.png">
+  <meta name="twitter:card" content="summary">
+
+  <link rel="icon" type="image/png" href="../assets/icon.png">
+  <link rel="apple-touch-icon" href="../assets/icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="../assets/logo.png">
+  <link rel="stylesheet" href="../styles.css?v=11">
+  <link rel="stylesheet" href="candidates.css?v=2">
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body class="cpage">
+  <div class="fx fx-vignette" aria-hidden="true"></div>
+  <div class="fx fx-grain" aria-hidden="true"></div>
+  <div class="progress" aria-hidden="true"></div>
+
+  <main>
+    <header class="phead">
+      <p class="host">
+        <img src="../assets/seal.png" alt="" width="360" height="356">
+        <span><b>Local Government of Sindangan</b><small>Zamboanga del Norte</small></span>
+      </p>
+      <div class="statue statue--page" aria-hidden="true"></div>
+      <div class="wordmark" role="img" aria-label="Binibining Sindangan 2026"></div>
+      <div class="ornament" aria-hidden="true"><span></span><i>✦</i><span></span></div>
+      <p class="eyebrow">Official Candidates</p>
+      <h1 class="gold-text">Top 20 Candidates</h1>
+      <p class="phead__sub">Congratulations on making the Top 20! Read your schedule of activities and attires, then fill up the candidate form below.</p>
+      <nav class="phead__nav" aria-label="On this page">
+        <a class="btn btn--outline" href="#schedule">Activities and Attires</a>
+        <a class="btn btn--gold" href="#form">Fill Up the Form</a>
+      </nav>
+    </header>
+
+    <!-- The Top 20 (shown once the list in data.js is filled in) -->
+    <section class="section" id="top20" hidden>
+      <div class="section__head reveal">
+        <p class="eyebrow">The Results</p>
+        <h2 class="gold-text">The Top 20</h2>
+      </div>
+      <ol class="roll" id="top20List"></ol>
+    </section>
+
+    <!-- Activities and attires (from data.js) -->
+    <section class="section" id="schedule">
+      <div class="section__head reveal">
+        <p class="eyebrow">Your Schedule</p>
+        <h2 class="gold-text">Activities and Attires</h2>
+        <p class="section__lead">Please come on time and in the attire listed for each activity.</p>
+      </div>
+      <ol class="sched" id="scheduleList"></ol>
+      <p class="sched__empty reveal" id="scheduleEmpty">The schedule of activities and attires will be posted here soon.</p>
+    </section>
+
+    <!-- Candidate form -->
+    <section class="section" id="form">
+      <div class="section__head reveal">
+        <p class="eyebrow">Candidate Form</p>
+        <h2 class="gold-text">Your Information</h2>
+        <p class="section__lead">Fill this up once. If something changes, or your music or backdrop is not ready yet, you can submit the form again and we will use your latest answers.</p>
+      </div>
+
+      <form class="form" id="candidateForm" novalidate>
+        <h3 class="form__group">Candidate</h3>
+        <div class="field" id="pickField" hidden>
+          <label for="candidatePick">Find your name</label>
+          <select id="candidatePick" name="candidatePick">
+            <option value="">Select your name</option>
+          </select>
+        </div>
+        <div class="field field--half">
+          <label for="candidateNo">Candidate number</label>
+          <input id="candidateNo" name="candidateNo" type="number" inputmode="numeric" min="1" max="999" required data-error="Please enter your candidate number.">
+        </div>
+        <div class="field field--half">
+          <label for="nickname">Nickname <small>(optional)</small></label>
+          <input id="nickname" name="nickname" type="text" autocomplete="nickname" maxlength="60">
+        </div>
+        <div class="field">
+          <label for="fullName">Full name</label>
+          <input id="fullName" name="fullName" type="text" autocomplete="name" maxlength="120" required data-error="Please enter your full name.">
+        </div>
+
+        <h3 class="form__group">Basic Profile</h3>
+        <div class="field">
+          <label for="representing">Barangay or group you represent</label>
+          <input id="representing" name="representing" type="text" maxlength="160" required data-error="Please enter the barangay or group you represent.">
+        </div>
+        <div class="field field--half">
+          <label for="age">Age</label>
+          <input id="age" name="age" type="number" inputmode="numeric" min="1" max="99" required data-error="Please enter your age.">
+        </div>
+        <div class="field field--half">
+          <label for="birthday">Birthday</label>
+          <input id="birthday" name="birthday" type="date" autocomplete="bday" required data-error="Please enter your birthday.">
+        </div>
+        <div class="field">
+          <label for="address">Home address</label>
+          <input id="address" name="address" type="text" autocomplete="street-address" maxlength="240" required data-error="Please enter your home address.">
+        </div>
+
+        <h3 class="form__group">Contact Details</h3>
+        <div class="field field--half">
+          <label for="phone">Mobile number</label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="09XX XXX XXXX" required data-error="Please enter your mobile number.">
+        </div>
+        <div class="field field--half">
+          <label for="email">Email <small>(optional)</small></label>
+          <input id="email" name="email" type="email" autocomplete="email" maxlength="160">
+        </div>
+        <div class="field">
+          <label for="facebook">Facebook profile <small>(optional)</small></label>
+          <input id="facebook" name="facebook" type="text" maxlength="240" placeholder="Profile link or name">
+        </div>
+        <div class="field field--half">
+          <label for="guardianName">Parent, guardian or handler</label>
+          <input id="guardianName" name="guardianName" type="text" maxlength="120" required data-error="Please enter the name of your parent, guardian or handler.">
+        </div>
+        <div class="field field--half">
+          <label for="guardianPhone">Their mobile number</label>
+          <input id="guardianPhone" name="guardianPhone" type="tel" inputmode="tel" maxlength="30" placeholder="09XX XXX XXXX" required data-error="Please enter their mobile number.">
+        </div>
+
+        <h3 class="form__group">Stats and Sizes</h3>
+        <div class="field field--half">
+          <label for="height">Height</label>
+          <input id="height" name="height" type="text" maxlength="30" placeholder="e.g. 5'6&quot; or 168 cm" required data-error="Please enter your height.">
+        </div>
+        <div class="field field--half">
+          <label for="vitalStats">Vital statistics <small>(bust-waist-hips)</small></label>
+          <input id="vitalStats" name="vitalStats" type="text" maxlength="40" placeholder="e.g. 34-24-36" required data-error="Please enter your vital statistics.">
+        </div>
+        <div class="field field--half">
+          <label for="shoeSize">Shoe size</label>
+          <input id="shoeSize" name="shoeSize" type="text" maxlength="20" placeholder="e.g. 7" required data-error="Please enter your shoe size.">
+        </div>
+        <div class="field field--half">
+          <label for="shirtSize">Shirt size</label>
+          <select id="shirtSize" name="shirtSize" required data-error="Please choose your shirt size.">
+            <option value="">Select a size</option>
+            <option>XS</option>
+            <option>S</option>
+            <option>M</option>
+            <option>L</option>
+            <option>XL</option>
+            <option>XXL</option>
+          </select>
+        </div>
+
+        <h3 class="form__group">Pageant Bio</h3>
+        <div class="field">
+          <label for="occupation">School or occupation</label>
+          <input id="occupation" name="occupation" type="text" maxlength="200" placeholder="School and course, or your work" required data-error="Please enter your school or occupation.">
+        </div>
+        <div class="field">
+          <label for="hobbies">Hobbies and interests <small>(optional)</small></label>
+          <input id="hobbies" name="hobbies" type="text" maxlength="300">
+        </div>
+        <div class="field">
+          <label for="motto">Motto <small>(optional)</small></label>
+          <textarea id="motto" name="motto" rows="2" maxlength="400"></textarea>
+        </div>
+        <div class="field">
+          <label for="advocacy">Advocacy <small>(optional)</small></label>
+          <textarea id="advocacy" name="advocacy" rows="3" maxlength="800"></textarea>
+        </div>
+
+        <h3 class="form__group">Talent Portion</h3>
+        <div class="field">
+          <label for="talent">Your talent</label>
+          <input id="talent" name="talent" type="text" maxlength="200" placeholder="e.g. Contemporary dance" required data-error="Please tell us your talent.">
+        </div>
+        <div class="field">
+          <label for="talentDescription">Short description <small>(optional)</small></label>
+          <textarea id="talentDescription" name="talentDescription" rows="3" maxlength="800" aria-describedby="talentDescription-hint"></textarea>
+          <p class="field__hint" id="talentDescription-hint">A few lines the host can read to introduce your performance.</p>
+        </div>
+
+        <div class="field">
+          <label for="musicLink">Link to your talent music</label>
+          <input id="musicLink" name="musicLink" type="text" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="500" placeholder="https://drive.google.com/…" aria-describedby="musicLink-hint">
+          <p class="field__hint" id="musicLink-hint">Upload your final, edited music to Google Drive, then paste its link here. Set the link so that anyone with the link can view it.</p>
+        </div>
+        <div class="field">
+          <label for="musicNotes">Notes for the sound operator <small>(optional)</small></label>
+          <textarea id="musicNotes" name="musicNotes" rows="2" maxlength="500" placeholder="e.g. Start at 0:15, fade out at 3:00"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="backdropLink">Link to your LED backdrop</label>
+          <input id="backdropLink" name="backdropLink" type="text" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="500" placeholder="https://drive.google.com/…" aria-describedby="backdropLink-hint">
+          <p class="field__hint" id="backdropLink-hint">The image or video to show on the LED wall during your talent. Upload it to Google Drive, then paste its link here. Set the link so that anyone with the link can view it.</p>
+        </div>
+        <div class="field">
+          <label for="backdropNotes">Notes for the LED operator <small>(optional)</small></label>
+          <textarea id="backdropNotes" name="backdropNotes" rows="2" maxlength="500" placeholder="e.g. Play on loop, no sound"></textarea>
+        </div>
+
+        <div class="field">
+          <label class="check">
+            <input id="consent" name="consent" type="checkbox" required data-error="Please tick the box to continue.">
+            <span>I confirm that these details are correct, and I allow the Binibining Sindangan 2026 Committee to use them for the pageant.</span>
+          </label>
+        </div>
+
+        <!-- Spam trap: real candidates never see or fill this -->
+        <div class="hp" aria-hidden="true">
+          <label for="website">Website</label>
+          <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
+        <button class="btn btn--gold btn--wide" id="submitBtn" type="submit">Submit My Details</button>
+        <p class="form__status" id="formStatus" role="status" aria-live="polite"></p>
+      </form>
+
+      <div class="thanks" id="thanks" hidden tabindex="-1">
+        <div class="thanks__mark" aria-hidden="true">✦</div>
+        <h3 class="gold-text" id="thanksTitle">Thank you!</h3>
+        <p id="thanksText">Your details have been received by the Binibining Sindangan 2026 Committee.</p>
+        <p class="thanks__todo" id="thanksTodo" hidden></p>
+        <button class="btn btn--outline" id="againBtn" type="button">Update My Answers</button>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="ornament" aria-hidden="true"><span></span><i>✦</i><span></span></div>
+      <img class="footer__logo" src="../assets/seal.png" alt="Official Seal of the Municipality of Sindangan" width="360" height="356" loading="lazy">
+      <p class="footer__brand gold-text">Municipality of Sindangan</p>
+      <p class="footer__sub">Local Government of Sindangan<br>Binibining Sindangan 2026 Committee</p>
+      <p class="footer__ask">Questions about your schedule or this form? Contact the committee.</p>
+      <ul class="footer__links">
+        <li><span>Mobile</span><a href="tel:+639152276737">(0915) 227 6737</a></li>
+        <li><span>Landline</span><a href="tel:+63659178385">(065) 917 8385</a></li>
+        <li><span>Email</span><a href="mailto:bb.sindangan@gmail.com">bb.sindangan@gmail.com</a></li>
+        <li><span>Facebook</span><a href="https://www.facebook.com/profile.php?id=100057436449824" target="_blank" rel="noopener">Binibining Sindangan</a></li>
+      </ul>
+      <p class="footer__fine">Sindangan, Zamboanga del Norte, Philippines</p>
+      <p class="footer__credit"><span>Event partner</span><img src="../assets/ever-after.png" alt="Ever After Wedding &amp; Events" width="368" height="252" loading="lazy"></p>
+    </footer>
+  </main>
+
+  <script src="data.js?v=1" defer></script>
+  <script src="candidates.js?v=2" defer></script>
+</body>
+</html>
