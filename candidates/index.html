@@ -28,16 +28,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="../assets/logo.png">
   <link rel="stylesheet" href="../styles.css?v=11">
-  <link rel="stylesheet" href="candidates.css?v=2">
+  <link rel="stylesheet" href="candidates.css?v=3">
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body class="cpage">
+  <canvas id="sparkles" aria-hidden="true"></canvas>
   <div class="fx fx-vignette" aria-hidden="true"></div>
   <div class="fx fx-grain" aria-hidden="true"></div>
   <div class="progress" aria-hidden="true"></div>
 
   <main>
     <header class="phead">
+      <!-- Stage light behind the statue: rays, a bloom of gold, two slow spotlights -->
+      <div class="phead__fx" aria-hidden="true"><i class="pbeam pbeam--a"></i><i class="pbeam pbeam--b"></i></div>
       <p class="host">
         <img src="../assets/seal.png" alt="" width="360" height="356">
         <span><b>Local Government of Sindangan</b><small>Zamboanga del Norte</small></span>
@@ -83,7 +86,7 @@
       </div>
 
       <form class="form" id="candidateForm" novalidate>
-        <h3 class="form__group">Candidate</h3>
+        <h3 class="form__group reveal">Candidate</h3>
         <div class="field" id="pickField" hidden>
           <label for="candidatePick">Find your name</label>
           <select id="candidatePick" name="candidatePick">
@@ -103,7 +106,7 @@
           <input id="fullName" name="fullName" type="text" autocomplete="name" maxlength="120" required data-error="Please enter your full name.">
         </div>
 
-        <h3 class="form__group">Basic Profile</h3>
+        <h3 class="form__group reveal">Basic Profile</h3>
         <div class="field">
           <label for="representing">Barangay or group you represent</label>
           <input id="representing" name="representing" type="text" maxlength="160" required data-error="Please enter the barangay or group you represent.">
@@ -121,7 +124,7 @@
           <input id="address" name="address" type="text" autocomplete="street-address" maxlength="240" required data-error="Please enter your home address.">
         </div>
 
-        <h3 class="form__group">Contact Details</h3>
+        <h3 class="form__group reveal">Contact Details</h3>
         <div class="field field--half">
           <label for="phone">Mobile number</label>
           <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="09XX XXX XXXX" required data-error="Please enter your mobile number.">
@@ -143,7 +146,7 @@
           <input id="guardianPhone" name="guardianPhone" type="tel" inputmode="tel" maxlength="30" placeholder="09XX XXX XXXX" required data-error="Please enter their mobile number.">
         </div>
 
-        <h3 class="form__group">Stats and Sizes</h3>
+        <h3 class="form__group reveal">Stats and Sizes</h3>
         <div class="field field--half">
           <label for="height">Height</label>
           <input id="height" name="height" type="text" maxlength="30" placeholder="e.g. 5'6&quot; or 168 cm" required data-error="Please enter your height.">
@@ -169,7 +172,7 @@
           </select>
         </div>
 
-        <h3 class="form__group">Pageant Bio</h3>
+        <h3 class="form__group reveal">Pageant Bio</h3>
         <div class="field">
           <label for="occupation">School or occupation</label>
           <input id="occupation" name="occupation" type="text" maxlength="200" placeholder="School and course, or your work" required data-error="Please enter your school or occupation.">
@@ -187,7 +190,7 @@
           <textarea id="advocacy" name="advocacy" rows="3" maxlength="800"></textarea>
         </div>
 
-        <h3 class="form__group">Talent Portion</h3>
+        <h3 class="form__group reveal">Talent Portion</h3>
         <div class="field">
           <label for="talent">Your talent</label>
           <input id="talent" name="talent" type="text" maxlength="200" placeholder="e.g. Contemporary dance" required data-error="Please tell us your talent.">
@@ -246,7 +249,7 @@
 
     <footer class="footer">
       <div class="ornament" aria-hidden="true"><span></span><i>✦</i><span></span></div>
-      <img class="footer__logo" src="../assets/seal.png" alt="Official Seal of the Municipality of Sindangan" width="360" height="356" loading="lazy">
+      <img class="footer__logo reveal" src="../assets/seal.png" alt="Official Seal of the Municipality of Sindangan" width="360" height="356" loading="lazy">
       <p class="footer__brand gold-text">Municipality of Sindangan</p>
       <p class="footer__sub">Local Government of Sindangan<br>Binibining Sindangan 2026 Committee</p>
       <p class="footer__ask">Questions about your schedule or this form? Contact the committee.</p>
@@ -262,6 +265,6 @@
   </main>
 
   <script src="data.js?v=1" defer></script>
-  <script src="candidates.js?v=2" defer></script>
+  <script src="candidates.js?v=3" defer></script>
 </body>
 </html>

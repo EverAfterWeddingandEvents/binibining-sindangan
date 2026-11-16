@@ -188,3 +188,246 @@
 .thanks .btn { margin-top: 22px; }
 
 .footer__ask { margin-top: 18px; font-size: .9rem; color: var(--muted); }
+
+/* =========================================================
+   CINEMATIC LAYER
+   Stage light, the title entrance, and motion on the cards
+   and the form. All of it is decoration: every element's
+   normal style is its finished state, so with reduced motion
+   (or if an animation never runs) the page simply shows.
+   ========================================================= */
+
+@property --orbit { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+
+/* ---------- Header: stage light ---------- */
+.phead { position: relative; --p: 0; }
+.phead > * { position: relative; }
+.phead > .phead__fx {
+  position: absolute;
+  inset: 0 0 -120px;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(#000 62%, transparent);
+  mask-image: linear-gradient(#000 62%, transparent);
+}
+/* Slow-turning rays centred on the statue (candidates.js sets --ray-x / --ray-y) */
+.phead__fx::before {
+  --ray: min(118svh, 920px);
+  content: "";
+  position: absolute;
+  left: var(--ray-x, 50%);
+  top: var(--ray-y, 190px);
+  width: var(--ray);
+  height: var(--ray);
+  margin: calc(var(--ray) / -2) 0 0 calc(var(--ray) / -2);
+  background: repeating-conic-gradient(from 0deg, rgba(255, 226, 150, .1) 0deg 5deg, transparent 5deg 17deg);
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 0, rgba(0, 0, 0, .55) 35%, transparent 96%);
+  mask-image: radial-gradient(circle closest-side, #000 0, rgba(0, 0, 0, .55) 35%, transparent 96%);
+  opacity: calc(1 - var(--p) * 1.2);
+  animation: rays 120s linear infinite, c-fade 2.6s ease .3s backwards;
+}
+/* A bloom of gold light as the page opens */
+.phead__fx::after {
+  content: "";
+  position: absolute;
+  left: var(--ray-x, 50%);
+  top: var(--ray-y, 190px);
+  width: 70vmax;
+  height: 70vmax;
+  margin: -35vmax 0 0 -35vmax;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 244, 205, .95), rgba(233, 196, 106, .45) 30%, transparent 68%);
+  opacity: 0;
+  animation: c-bloom 2.2s ease-out .05s both;
+}
+/* Two slow spotlights: soft-edged cones of gold light from above, either side of the statue */
+.pbeam {
+  --off: clamp(40px, 17vw, 250px);
+  position: absolute;
+  top: -6%;
+  width: 60vmax;
+  height: 135vmax;
+  background: conic-gradient(from 168deg at 50% 0, transparent 0deg, rgba(255, 220, 150, .2) 7deg, rgba(255, 220, 150, .2) 17deg, transparent 24deg);
+  -webkit-mask-image: linear-gradient(#000, rgba(0, 0, 0, .35) 40%, transparent 68%);
+  mask-image: linear-gradient(#000, rgba(0, 0, 0, .35) 40%, transparent 68%);
+  transform-origin: 50% 0;
+}
+.pbeam--a { left: calc(50% - 30vmax - var(--off)); animation: sweep-a 9s ease-in-out infinite, c-fade 3s ease 1.2s backwards; }
+.pbeam--b { left: calc(50% - 30vmax + var(--off)); animation: sweep-b 11s ease-in-out infinite, c-fade 3s ease 1.6s backwards; }
+/* Nothing in the header keeps animating once it has scrolled away */
+.phead.is-away .phead__fx::before, .phead.is-away .pbeam, .phead.is-away .statue--page,
+.phead.is-away .statue--page::after, .phead.is-away .wordmark::after, .phead.is-away .lt { animation-play-state: paused; }
+
+/* ---------- Header: the title card arrives piece by piece ---------- */
+.statue--page {
+  translate: 0 calc(var(--p) * 56px);
+  animation: c-statue 1.6s cubic-bezier(.2, .7, .2, 1) .1s backwards, float 6s ease-in-out 1.7s infinite;
+}
+.phead .wordmark { translate: 0 calc(var(--p) * 30px); }
+/* A highlight glides across the statue and the 3D title, masked to their shape */
+.statue--page::after, .phead .wordmark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 42%, rgba(255, 255, 255, .9) 50%, transparent 58%) no-repeat;
+  background-size: 300% 100%;
+  background-position: 150% 0;
+  -webkit-mask: url("../assets/logo.png") left center / auto 100% no-repeat;
+  mask: url("../assets/logo.png") left center / auto 100% no-repeat;
+  animation: shine 6.5s ease-in-out 2.2s infinite;
+  pointer-events: none;
+}
+.phead .wordmark::after { -webkit-mask-position: right center; mask-position: right center; animation-delay: 2.9s; }
+
+.phead .host, .phead .wordmark, .phead__sub, .phead__nav {
+  animation: c-rise 1.15s cubic-bezier(.2, .7, .2, 1) var(--d, 0s) backwards;
+}
+.phead .host { --d: .4s; }
+.phead .wordmark { --d: .55s; }
+.phead__sub { --d: 1.75s; }
+.phead__nav { --d: 1.95s; }
+.phead .eyebrow { animation: c-track 1.4s cubic-bezier(.2, .7, .2, 1) .9s backwards; }
+.phead .ornament span { animation: c-draw 1.1s cubic-bezier(.6, 0, .2, 1) .8s backwards; }
+.phead .ornament i { animation: c-star 1.1s cubic-bezier(.2, 1.5, .4, 1) .75s backwards, twinkle 2.4s ease-in-out 2.2s infinite; }
+
+/* Title letters land one by one, then a glint runs along them (candidates.js splits the heading) */
+.phead h1 .lt {
+  display: inline-block;
+  padding-bottom: .14em;
+  margin-bottom: -.14em;
+  animation:
+    c-letter .9s cubic-bezier(.2, .8, .2, 1) calc(1s + var(--i) * 42ms) backwards,
+    c-glint 6s ease-in-out calc(3.2s + var(--i) * 70ms) infinite;
+}
+
+/* ---------- Section titles: a sheen crosses the gold lettering ---------- */
+.cpage .section__head h2.gold-text {
+  background-image: linear-gradient(110deg, transparent 40%, rgba(255, 255, 255, .92) 50%, transparent 60%), var(--gold-grad);
+  background-size: 300% 100%, 100% 100%;
+  background-position: 150% 0, 0 0;
+  background-repeat: no-repeat;
+}
+.cpage .section__head.is-in h2.gold-text { animation: c-sheen 6s ease-in-out 1.2s infinite; }
+
+/* ---------- Cards: tip forward into view, a light sweeps across, the pointer carries a glow ---------- */
+.roll__item, .sched__item { position: relative; overflow: hidden; }
+.js .roll__item.reveal, .js .sched__item.reveal {
+  transform: perspective(800px) rotateX(-46deg) translateY(34px);
+  transform-origin: 50% 0;
+  transition: opacity 1s ease, transform 1.15s cubic-bezier(.2, .7, .2, 1), filter 1s ease, border-color .3s ease, box-shadow .3s ease, translate .3s ease;
+}
+.js .roll__item.reveal.is-in, .js .sched__item.reveal.is-in { transform: none; }
+.roll__item::after, .sched__item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 241, 194, .28) 50%, transparent 62%);
+  opacity: 0;
+  pointer-events: none;
+}
+.roll__item.is-in::after, .sched__item.is-in::after { animation: c-sweep 1.4s ease-out calc(var(--d, 0s) + .35s) both; }
+.roll__item::before, .sched__item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 226, 150, .16), transparent 65%);
+  opacity: 0;
+  transition: opacity .35s ease;
+  pointer-events: none;
+}
+@media (hover: hover) {
+  .roll__item:hover, .sched__item:hover { border-color: var(--gold); box-shadow: 0 10px 40px rgba(233, 196, 106, .16); translate: 0 -3px; }
+  .roll__item:hover::before, .sched__item:hover::before { opacity: 1; }
+}
+.roll__item.is-in .roll__no { animation: c-pop .9s cubic-bezier(.2, 1.5, .4, 1) calc(var(--d, 0s) + .25s) backwards; }
+.sched__empty::before {
+  content: "✦";
+  display: block;
+  margin-bottom: 6px;
+  font-size: 1.3rem;
+  color: var(--gold);
+  animation: twinkle 2.4s ease-in-out infinite;
+}
+
+/* ---------- Form: a thread of light travels round the frame ---------- */
+.cpage .form, .cpage .thanks { position: relative; }
+.cpage .form::before, .cpage .thanks::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--orbit), transparent 0 72%, rgba(255, 241, 194, .95) 86%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: c-orbit 9s linear infinite;
+  pointer-events: none;
+}
+/* Group titles slide in and underline themselves */
+.form__group {
+  border-bottom-color: transparent;
+  background: linear-gradient(90deg, var(--gold), rgba(233, 196, 106, .12)) left bottom / 100% 1px no-repeat;
+}
+.js .form__group.reveal {
+  transform: translateX(-18px);
+  filter: none;
+  transition: opacity .9s ease, transform 1s cubic-bezier(.2, .7, .2, 1), background-size 1.3s cubic-bezier(.6, 0, .2, 1) .15s;
+}
+.js .form__group.reveal:not(.is-in) { background-size: 0 1px; }
+.js .form__group.reveal.is-in { transform: none; }
+/* Fields glow softly while they are being filled */
+.cpage .field input, .cpage .field select, .cpage .field textarea {
+  transition: border-color .25s ease, background-color .25s ease, box-shadow .4s ease;
+}
+.cpage .field input:not([type="checkbox"]):focus, .cpage .field select:focus, .cpage .field textarea:focus {
+  box-shadow: 0 8px 30px rgba(233, 196, 106, .22);
+}
+.cpage .field > label:not(.check) { transition: color .25s ease; }
+.cpage .field:focus-within > label:not(.check) { color: var(--gold-light); }
+.cpage .btn:active { transform: scale(.97); }
+
+/* Thank-you: a ring of light opens from the star */
+.thanks__mark { position: relative; }
+.thanks__mark::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px;
+  border: 1px solid var(--gold-light);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+.thanks:not([hidden]) .thanks__mark::after { animation: c-ring 1.7s ease-out .35s 2 both; }
+
+/* The seal turns in like a coin */
+.js .footer__logo.reveal {
+  transform: perspective(700px) rotateY(180deg) scale(.6);
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, .5));
+  transition: opacity .9s ease, transform 1.5s cubic-bezier(.2, .7, .2, 1);
+}
+.js .footer__logo.reveal.is-in { transform: none; }
+
+@keyframes c-fade { from { opacity: 0; } }
+@keyframes c-bloom { 0% { opacity: 0; transform: scale(.1); } 22% { opacity: .9; } 100% { opacity: 0; transform: scale(1.7); } }
+@keyframes c-statue { from { opacity: 0; scale: .72; } }
+@keyframes c-rise { from { opacity: 0; transform: translateY(28px) scale(.97); filter: blur(10px); } }
+@keyframes c-track { from { opacity: 0; letter-spacing: .8em; } }
+@keyframes c-draw { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0 0 0 0); } }
+@keyframes c-star { from { opacity: 0; transform: scale(0) rotate(-180deg); } }
+@keyframes c-letter { from { opacity: 0; transform: translateY(.55em) rotate(8deg) scale(1.25); filter: blur(8px); } }
+@keyframes c-glint { 0%, 12%, 100% { filter: brightness(1); } 6% { filter: brightness(1.75); } }
+@keyframes c-sheen { 0%, 58% { background-position: 150% 0, 0 0; } 100% { background-position: -50% 0, 0 0; } }
+@keyframes c-sweep { 0% { opacity: 1; transform: translateX(-110%); } 100% { opacity: 1; transform: translateX(110%); } }
+@keyframes c-pop { from { transform: scale(0) rotate(-200deg); } }
+@keyframes c-orbit { to { --orbit: 360deg; } }
+@keyframes c-ring { 0% { opacity: .9; transform: scale(.4); } 100% { opacity: 0; transform: scale(4.2); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .pbeam, .phead__fx::after, .statue--page::after, .phead .wordmark::after, .cpage .form::before, .cpage .thanks::before { display: none; }
+  .statue--page, .phead .wordmark { translate: none; }
+}

@@ -67,11 +67,14 @@ function make(tag, className, text) {
 
 /* ---- Scroll: progress bar and reveals ---- */
 (function scrollFx() {
+  const head = document.querySelector(".phead");
   let queued = false;
   function update() {
     queued = false;
     const max = root.scrollHeight - window.innerHeight;
     root.style.setProperty("--scroll", max > 0 ? Math.min(1, window.scrollY / max).toFixed(4) : "0");
+    // --p runs 0 → 1 as the header scrolls away: the statue drifts and the rays fade.
+    if (!reduceMotion) head.style.setProperty("--p", Math.min(1, window.scrollY / head.offsetHeight).toFixed(4));
   }
   window.addEventListener("scroll", () => {
     if (queued) return;
@@ -90,16 +93,72 @@ function make(tag, className, text) {
     (entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-in");
-        io.unobserve(entry.target);
+        const node = entry.target;
+        node.classList.add("is-in");
+        io.unobserve(node);
+        // Once it has arrived, drop the stagger so hover effects respond at once.
+        setTimeout(() => (node.style.transitionDelay = ""), 1800);
       });
     },
     { threshold: 0.08, rootMargin: "0px 0px -4% 0px" }
   );
   items.forEach((node, i) => {
-    node.style.transitionDelay = (i % 4) * 60 + "ms";
+    const delay = (i % 5) * 70 + "ms";
+    node.style.transitionDelay = delay;
+    node.style.setProperty("--d", delay); // the card's light sweep and number badge follow the same stagger
     io.observe(node);
   });
+})();
+
+/* ---- Header: title letters, ray centre, pause when out of view ---- */
+(function header() {
+  const head = document.querySelector(".phead");
+  const statue = head.querySelector(".statue--page");
+  const fx = head.querySelector(".phead__fx");
+
+  // Split the title into letters so they can land one by one.
+  const h1 = head.querySelector("h1");
+  const text = h1.textContent.trim();
+  h1.setAttribute("aria-label", text);
+  h1.classList.remove("gold-text"); // each letter carries the gold fill instead
+  h1.textContent = "";
+  let i = 0;
+  text.split(" ").forEach((word, w, all) => {
+    const wordEl = make("span", "word");
+    wordEl.setAttribute("aria-hidden", "true");
+    for (const ch of word) {
+      const letter = make("span", "lt gold-text", ch);
+      letter.style.setProperty("--i", i++);
+      wordEl.appendChild(letter);
+    }
+    h1.appendChild(wordEl);
+    if (w < all.length - 1) h1.appendChild(document.createTextNode(" "));
+  });
+
+  // Keep the rays and the opening bloom centred on the statue's body.
+  function aim() {
+    fx.style.setProperty("--ray-x", (statue.offsetLeft + statue.offsetWidth * 0.49).toFixed(1) + "px");
+    fx.style.setProperty("--ray-y", (statue.offsetTop + statue.offsetHeight * 0.46).toFixed(1) + "px");
+  }
+  window.addEventListener("resize", aim);
+  window.addEventListener("load", aim);
+  aim();
+
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(([entry]) => head.classList.toggle("is-away", !entry.isIntersecting)).observe(head);
+  }
+})();
+
+/* ---- Cards: a soft glow follows the pointer ---- */
+(function spotlight() {
+  if (reduceMotion || !window.matchMedia("(hover: hover)").matches) return;
+  document.addEventListener("pointermove", (event) => {
+    const card = event.target.closest?.(".roll__item, .sched__item");
+    if (!card) return;
+    const box = card.getBoundingClientRect();
+    card.style.setProperty("--mx", (event.clientX - box.left).toFixed(0) + "px");
+    card.style.setProperty("--my", (event.clientY - box.top).toFixed(0) + "px");
+  }, { passive: true });
 })();
 
 /* ---- Candidate form ---- */
@@ -280,6 +339,11 @@ function make(tag, className, text) {
     thanks.hidden = false;
     thanks.focus({ preventScroll: true });
     thanks.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+    // Gold dust bursts from the star once the panel has settled.
+    setTimeout(() => {
+      const mark = thanks.querySelector(".thanks__mark").getBoundingClientRect();
+      if (window.goldBurst) window.goldBurst(mark.left + mark.width / 2, mark.top + mark.height / 2, 120);
+    }, 600);
   }
 
   document.getElementById("againBtn").addEventListener("click", () => {
@@ -327,5 +391,127 @@ function make(tag, className, text) {
       setBusy(false);
       showFailure("We couldn’t send your details.");
     }
+  });
+})();
+
+/* ---- Gold dust: drifting sparkles behind the page, and bursts on demand ---- */
+(function sparkles() {
+  const canvas = document.getElementById("sparkles");
+  const ctx = canvas && canvas.getContext("2d");
+  if (!ctx) return;
+  let w, h, dots, raf;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const sparks = [];
+  const SPARK_COLORS = ["#fff1c2", "#f6d98b", "#e9c46a", "#c9962f"];
+
+  function build() {
+    w = window.innerWidth;
+    h = window.innerHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const count = Math.round(Math.min(110, (w * h) / 11000));
+    dots = Array.from({ length: count }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: Math.random() * 1.5 + 0.4,
+      phase: Math.random() * Math.PI * 2,
+      speed: Math.random() * 0.9 + 0.3,
+      drift: Math.random() * 0.12 + 0.03,
+      star: Math.random() < 0.08,
+    }));
+  }
+
+  function draw(t) {
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = "#f6d98b";
+    for (const d of dots) {
+      const glow = 0.25 + 0.75 * Math.abs(Math.sin(d.phase + (t / 1000) * d.speed));
+      ctx.globalAlpha = glow * 0.85;
+      ctx.beginPath();
+      if (d.star) {
+        // A four-point star that swells as it twinkles
+        const s = d.r * 3.2 * glow;
+        ctx.moveTo(d.x, d.y - s);
+        ctx.quadraticCurveTo(d.x, d.y, d.x + s, d.y);
+        ctx.quadraticCurveTo(d.x, d.y, d.x, d.y + s);
+        ctx.quadraticCurveTo(d.x, d.y, d.x - s, d.y);
+        ctx.quadraticCurveTo(d.x, d.y, d.x, d.y - s);
+      } else {
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+      }
+      ctx.fill();
+      d.y -= d.drift;
+      if (d.y < -4) {
+        d.y = h + 4;
+        d.x = Math.random() * w;
+      }
+    }
+    // Burst particles: fly out, fall, fade.
+    for (let i = sparks.length - 1; i >= 0; i--) {
+      const s = sparks[i];
+      s.x += s.vx;
+      s.y += s.vy;
+      s.vx *= 0.985;
+      s.vy = s.vy * 0.985 + 0.045;
+      s.life -= s.decay;
+      if (s.life <= 0) {
+        sparks.splice(i, 1);
+        continue;
+      }
+      ctx.globalAlpha = Math.min(1, s.life);
+      ctx.fillStyle = s.color;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  window.goldBurst = (x, y, count) => {
+    if (reduceMotion) return;
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 6 + 1.5;
+      sparks.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 1.5,
+        r: Math.random() * 2.2 + 0.6,
+        life: 1.2,
+        decay: Math.random() * 0.012 + 0.008,
+        color: SPARK_COLORS[(Math.random() * SPARK_COLORS.length) | 0],
+      });
+    }
+  };
+
+  function loop(t) {
+    draw(t);
+    raf = requestAnimationFrame(loop);
+  }
+
+  build();
+  if (reduceMotion) draw(0);
+  else raf = requestAnimationFrame(loop);
+
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      build();
+      if (reduceMotion) draw(0);
+    }, 150);
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (reduceMotion) return;
+    cancelAnimationFrame(raf);
+    if (!document.hidden) raf = requestAnimationFrame(loop);
+  });
+
+  // A first shower of gold as the statue arrives.
+  window.addEventListener("load", () => {
+    const statue = document.querySelector(".statue--page").getBoundingClientRect();
+    setTimeout(() => window.goldBurst(statue.left + statue.width / 2, statue.top + statue.height * 0.45, 70), 500);
   });
 })();
