@@ -164,7 +164,8 @@
 .savechip__icon { flex: none; }
 /* While answers are still being written: a quieter badge without the tick */
 .savechip.is-saving .savechip__pill { color: var(--gold-light); background: rgba(18, 4, 10, .92); box-shadow: 0 6px 18px rgba(0, 0, 0, .5), inset 0 0 0 1px rgba(233, 196, 106, .55); }
-.savechip.is-saving .savechip__tick { visibility: hidden; }
+.savechip.is-saving .savechip__pill { padding-left: 13px; }
+.savechip.is-saving .savechip__icon { display: none; }
 
 /* ---------- Form: groups, extra controls ---------- */
 .form__group {
