@@ -28,7 +28,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="../assets/logo.png">
   <link rel="stylesheet" href="../styles.css?v=11">
-  <link rel="stylesheet" href="candidates.css?v=3">
+  <link rel="stylesheet" href="candidates.css?v=6">
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body class="cpage">
@@ -82,9 +82,23 @@
       <div class="section__head reveal">
         <p class="eyebrow">Candidate Form</p>
         <h2 class="gold-text">Your Information</h2>
-        <p class="section__lead">Fill this up once. If something changes, or your music or backdrop is not ready yet, you can submit the form again and we will use your latest answers.</p>
+        <p class="section__lead">Your answers are saved on this device as you type, so you can stop and continue later. If something changes, or your music or backdrop is not ready yet, submit the form again and we will use your latest answers.</p>
       </div>
 
+      <p class="saved" id="savedNote" hidden>
+        <span id="savedText" role="status"></span>
+        <button type="button" id="clearSaved">Clear saved answers</button>
+      </p>
+
+      <div class="formwrap">
+        <!-- Stays pinned at the top of the screen while the candidate scrolls through the form.
+             (The note above the form announces the same thing to screen readers.) -->
+        <div class="savechip" id="saveChip" hidden aria-hidden="true">
+          <span class="savechip__pill">
+            <svg class="savechip__icon" viewBox="0 0 20 20" width="16" height="16"><circle cx="10" cy="10" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path class="savechip__tick" d="M6 10.4l2.7 2.7L14.2 7.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span id="saveChipText">Saved on this device</span>
+          </span>
+        </div>
       <form class="form" id="candidateForm" novalidate>
         <h3 class="form__group reveal">Candidate</h3>
         <div class="field" id="pickField" hidden>
@@ -237,6 +251,7 @@
         <button class="btn btn--gold btn--wide" id="submitBtn" type="submit">Submit My Details</button>
         <p class="form__status" id="formStatus" role="status" aria-live="polite"></p>
       </form>
+      </div>
 
       <div class="thanks" id="thanks" hidden tabindex="-1">
         <div class="thanks__mark" aria-hidden="true">✦</div>
@@ -265,6 +280,6 @@
   </main>
 
   <script src="data.js?v=1" defer></script>
-  <script src="candidates.js?v=3" defer></script>
+  <script src="candidates.js?v=6" defer></script>
 </body>
 </html>

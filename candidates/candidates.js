@@ -266,12 +266,31 @@ function make(tag, className, text) {
 
   form.birthday.max = new Date().toLocaleDateString("en-CA"); // today, as YYYY-MM-DD
 
-  /* -- Draft: keep typed answers if the page reloads halfway. Cleared once the form is sent. -- */
-  const DRAFT_KEY = "bs2026-candidate-draft";
+  /* -- Auto-save: answers are kept in this browser as they are typed, and stay after the form is sent,
+        so a candidate can come back later (for example to add her music link) without typing it all again.
+        The tick box is never saved: it is ticked again for each submission. -- */
+  const SAVE_KEY = "bs2026-candidate-draft";
+  const SAVED_FIELDS = TEXT_FIELDS.concat("candidatePick");
+  const savedNote = document.getElementById("savedNote");
+  const savedText = document.getElementById("savedText");
+  const saveChip = document.getElementById("saveChip");
+  const saveChipText = document.getElementById("saveChipText");
+  function showSaved(message) {
+    savedNote.hidden = !message;
+    if (message && savedText.textContent !== message) savedText.textContent = message;
+    // The pinned badge shows the same state wherever she is in the form.
+    saveChip.hidden = !message;
+    saveChip.classList.remove("is-saving");
+    saveChipText.textContent = "Saved on this device";
+  }
+
   let draftTimer = 0;
   function saveDraft() {
     clearTimeout(draftTimer);
     draftTimer = setTimeout(flushDraft, 400);
+    saveChip.hidden = false;
+    saveChip.classList.add("is-saving");
+    saveChipText.textContent = "Saving…";
   }
   // Write any answers typed since the last save right away.
   function flushDraft() {
@@ -279,27 +298,49 @@ function make(tag, className, text) {
     clearTimeout(draftTimer);
     draftTimer = 0;
     const draft = {};
-    TEXT_FIELDS.forEach((name) => {
+    SAVED_FIELDS.forEach((name) => {
       if (form[name].value) draft[name] = form[name].value;
     });
     try {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-    } catch (err) { /* private browsing or storage full: the form still works */ }
+      if (Object.keys(draft).length) {
+        localStorage.setItem(SAVE_KEY, JSON.stringify(draft));
+        showSaved("Your answers are saved on this device.");
+      } else {
+        localStorage.removeItem(SAVE_KEY);
+        showSaved("");
+      }
+    } catch (err) {
+      showSaved(""); // private browsing or storage full: the form still works, it just cannot remember
+    }
   }
   window.addEventListener("pagehide", flushDraft);
-  function clearDraft() {
+
+  // Bring back what was saved on an earlier visit.
+  try {
+    const draft = JSON.parse(localStorage.getItem(SAVE_KEY) || "{}");
+    let restored = false;
+    SAVED_FIELDS.forEach((name) => {
+      if (typeof draft[name] !== "string") return;
+      form[name].value = draft[name];
+      if (form[name].value) restored = true;
+    });
+    if (restored) showSaved("Welcome back. The answers saved on this device are filled in.");
+  } catch (err) { /* nothing saved, or storage is unavailable */ }
+
+  document.getElementById("clearSaved").addEventListener("click", () => {
+    if (!window.confirm("Clear all the answers saved on this device?")) return;
     clearTimeout(draftTimer);
     draftTimer = 0;
     try {
-      localStorage.removeItem(DRAFT_KEY);
+      localStorage.removeItem(SAVE_KEY);
     } catch (err) { /* nothing to clear */ }
-  }
-  try {
-    const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}");
-    TEXT_FIELDS.forEach((name) => {
-      if (typeof draft[name] === "string") form[name].value = draft[name];
-    });
-  } catch (err) { /* no draft */ }
+    form.reset();
+    form.querySelectorAll(".field.has-error [name]").forEach((input) => setError(input, ""));
+    status.className = "form__status";
+    status.textContent = "";
+    showSaved("");
+    form.candidateNo.focus();
+  });
 
   /* -- Sending -- */
   let busy = false;
@@ -336,6 +377,7 @@ function make(tag, className, text) {
       ? "We still need your " + missing.join(" and ") + ". When " + (missing.length > 1 ? "they are" : "it is") + " ready, come back to this page and submit the form again."
       : "";
     form.hidden = true;
+    saveChip.hidden = true;
     thanks.hidden = false;
     thanks.focus({ preventScroll: true });
     thanks.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
@@ -349,6 +391,7 @@ function make(tag, className, text) {
   document.getElementById("againBtn").addEventListener("click", () => {
     thanks.hidden = true;
     form.hidden = false;
+    saveChip.hidden = savedNote.hidden;
     form.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
     form.candidateNo.focus({ preventScroll: true });
   });
@@ -384,7 +427,6 @@ function make(tag, className, text) {
     try {
       await send(ENDPOINT, new URLSearchParams({ form: "candidate", ...data }), 90 * 1000);
       setBusy(false);
-      clearDraft();
       showThanks(data);
     } catch (err) {
       console.error("Candidate form failed:", err);
