@@ -76,7 +76,16 @@
 .sched__date { font: 400 1.15rem/1.25 var(--display); color: var(--gold-light); }
 .sched__time { font-size: .82rem; color: var(--muted); }
 .sched__title { margin: 0; font: 400 clamp(1.2rem, 5vw, 1.45rem)/1.25 var(--display); color: #fff; }
-.sched__venue { margin-top: 2px; font-size: .86rem; color: var(--muted); }
+.sched__note { margin-top: 2px; font-size: .9rem; color: var(--text); }
+.sched__events { list-style: none; display: grid; gap: 6px; margin: 8px 0 0; padding: 0; font-size: .95rem; color: var(--text); }
+.sched__events li { position: relative; padding-left: 20px; }
+.sched__events li::before { content: "✦"; position: absolute; left: 0; top: .15em; font-size: .7em; color: var(--gold); }
+/* A day with no single title: its events are the headline */
+.sched__events--lead { margin-top: 0; gap: 8px; font: 400 clamp(1.1rem, 4.6vw, 1.3rem)/1.25 var(--display); color: #fff; }
+.sched__events--lead li { padding-left: 22px; }
+.sched__events--lead li::before { top: .3em; font-size: .6em; }
+.sched__venue { margin-top: 10px; font-size: .86rem; color: var(--muted); }
+.sched__venue::before { content: "Venue"; display: block; margin-bottom: 1px; font-size: .62rem; font-weight: 600; letter-spacing: .26em; text-transform: uppercase; color: var(--gold); }
 .sched__attire {
   margin-top: 12px;
   padding-top: 12px;
@@ -106,6 +115,35 @@
   .sched__item { grid-template-columns: 190px 1fr; padding: 22px 24px; }
   .sched__when { padding-right: 24px; border-right: 1px solid rgba(233, 196, 106, .28); }
   .sched__when:empty { display: flex; } /* keeps the title in the second column */
+}
+
+/* ---------- Form: official letterhead above the title ---------- */
+.letterhead__seal { display: block; width: 72px; height: auto; margin: 0 auto 10px; filter: drop-shadow(0 6px 16px rgba(0, 0, 0, .5)); }
+.letterhead {
+  display: grid;
+  gap: 1px;
+  font: 400 clamp(.95rem, 3.9vw, 1.1rem)/1.4 var(--display);
+  letter-spacing: .05em;
+  color: var(--text);
+}
+.letterhead span:last-child { font-size: 1.18em; color: var(--gold-light); }
+.letterhead + h2 { margin-top: 14px; text-wrap: balance; }
+
+/* ---------- Form: wide layout on computer screens ----------
+   Twelve columns, so short answers sit side by side and the form is about half as tall.
+   Each field's width is its w2 / w3 / w4 / w6 class in index.html (twelfths of the row).
+   Phones and tablets keep the one- and two-column layouts from ../styles.css. */
+@media (min-width: 1024px) {
+  #form.section { width: min(100%, 1120px); }
+  .cpage .formwrap, .cpage .form { max-width: 1040px; }
+  .cpage .form { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 18px; }
+  .cpage .form .field--half { grid-column: span 6; }
+  .cpage .form .w2 { grid-column: span 2; }
+  .cpage .form .w3 { grid-column: span 3; }
+  .cpage .form .w4 { grid-column: span 4; }
+  .cpage .form .w6 { grid-column: span 6; }
+  /* Paired statements share a row: make the two frames the same height */
+  .cpage .form .field label.agree { height: 100%; }
 }
 
 /* ---------- Form: "saved on this device" note ---------- */
@@ -213,30 +251,56 @@
 
 .field__hint { margin-top: 6px; font-size: .78rem; line-height: 1.45; color: var(--muted); }
 
-/* Consent tick box */
-.field label.check {
+/* Agreement: one framed tick box per statement, plus "agree to all" at the top */
+.field label.agree {
   display: grid;
-  grid-template-columns: 24px 1fr;
-  gap: 12px;
+  grid-template-columns: 26px 1fr;
+  gap: 14px;
   align-items: start;
-  margin: 6px 0 0;
-  font-size: .88rem;
+  margin: 0;
+  padding: 14px 16px;
+  font-size: .9rem;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.55;
   letter-spacing: 0;
   text-transform: none;
   color: var(--text);
+  border: 1px solid rgba(233, 196, 106, .38);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .04);
   cursor: pointer;
+  transition: border-color .25s ease, background-color .25s ease;
 }
-.check input {
-  width: 24px;
-  height: 24px;
+.field label.agree:hover { border-color: rgba(233, 196, 106, .7); }
+.field label.agree:has(input:checked) { border-color: var(--gold); background: rgba(233, 196, 106, .08); }
+.field label.agree--all { border-style: dashed; font-weight: 600; color: var(--gold-light); }
+.agree b { font-weight: 600; color: var(--gold-light); }
+.agree a { color: var(--gold-light); text-underline-offset: 3px; }
+.agree a[href^="tel:"] { white-space: nowrap; }
+.agree input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 26px;
+  height: 26px;
   margin: 0;
-  accent-color: var(--gold);
-  color-scheme: dark;
+  border: 2px solid var(--gold);
+  border-radius: 7px;
+  background: transparent center / 16px 16px no-repeat;
   cursor: pointer;
+  transition: background-color .2s ease;
 }
-.check input:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 3px; }
+.agree input:checked {
+  background-color: var(--gold);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%233a1203' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' d='M3 8.4l3.2 3.2L13 4.6'/%3E%3C/svg%3E");
+}
+/* Some, but not all, statements ticked */
+.agree input:indeterminate {
+  background-color: var(--gold);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath stroke='%233a1203' stroke-width='2.4' stroke-linecap='round' d='M4 8h8'/%3E%3C/svg%3E");
+}
+.agree input:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 3px; }
+.field.has-error label.agree { border-color: #ff8a8a; }
+.field.has-error .agree input { border-color: #ff8a8a; }
 
 .thanks__todo {
   margin-top: 14px !important;

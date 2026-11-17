@@ -51,7 +51,14 @@ function make(tag, className, text) {
     item.appendChild(when);
 
     const what = make("div", "sched__what");
-    what.appendChild(make("h3", "sched__title", a.title));
+    if (a.title) what.appendChild(make("h3", "sched__title", a.title));
+    if (a.note) what.appendChild(make("p", "sched__note", a.note));
+    if (a.events && a.events.length) {
+      // With no title of its own, the day's events are the headline.
+      const events = make("ul", "sched__events" + (a.title ? "" : " sched__events--lead"));
+      a.events.forEach((name) => events.appendChild(make("li", "", name)));
+      what.appendChild(events);
+    }
     if (a.venue) what.appendChild(make("p", "sched__venue", a.venue));
     if (a.attire) {
       const attire = make("p", "sched__attire");
@@ -63,6 +70,10 @@ function make(tag, className, text) {
     list.appendChild(item);
   });
   document.getElementById("scheduleEmpty").hidden = true;
+  // Until the committee adds attires, don't tell candidates to follow a list that isn't there.
+  if (!ACTIVITIES.some((a) => a.attire)) {
+    document.getElementById("scheduleLead").textContent = "Please come on time for every activity. The attire for each one will be added here.";
+  }
 })();
 
 /* ---- Scroll: progress bar and reveals ---- */
@@ -241,7 +252,7 @@ function make(tag, className, text) {
   form.addEventListener("input", (event) => {
     const input = event.target;
     if (input.closest(".field")?.classList.contains("has-error")) setError(input, "");
-    saveDraft();
+    if (input.type !== "checkbox") saveDraft(); // the agreement boxes are not saved
   });
 
   /* -- "Find your name": fills in the number, name and barangay (only when data.js lists the Top 20) -- */
@@ -266,9 +277,27 @@ function make(tag, className, text) {
 
   form.birthday.max = new Date().toLocaleDateString("en-CA"); // today, as YYYY-MM-DD
 
+  /* -- Agreement: "I agree to all" ticks every statement, and follows them when they are ticked one by one -- */
+  const agreeAll = document.getElementById("agreeAll");
+  const agreeBoxes = [form.agreeTrue, form.agreeAttend, form.agreeMedia, form.agreeRules, form.agreePrivacy];
+  function syncAgreeAll() {
+    const ticked = agreeBoxes.filter((box) => box.checked).length;
+    agreeAll.checked = ticked === agreeBoxes.length;
+    agreeAll.indeterminate = ticked > 0 && ticked < agreeBoxes.length;
+  }
+  agreeAll.addEventListener("change", () => {
+    agreeBoxes.forEach((box) => {
+      box.checked = agreeAll.checked;
+      if (box.checked) setError(box, "");
+    });
+    syncAgreeAll();
+  });
+  agreeBoxes.forEach((box) => box.addEventListener("change", syncAgreeAll));
+  form.addEventListener("reset", () => setTimeout(syncAgreeAll)); // after the browser has cleared the boxes
+
   /* -- Auto-save: answers are kept in this browser as they are typed, and stay after the form is sent,
         so a candidate can come back later (for example to add her music link) without typing it all again.
-        The tick box is never saved: it is ticked again for each submission. -- */
+        The agreement boxes are never saved: they are ticked again for each submission. -- */
   const SAVE_KEY = "bs2026-candidate-draft";
   const SAVED_FIELDS = TEXT_FIELDS.concat("candidatePick");
   const savedNote = document.getElementById("savedNote");
