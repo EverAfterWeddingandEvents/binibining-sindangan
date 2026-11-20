@@ -13,7 +13,7 @@ const EVENT = {
   title: "Sponsors' Gathering | Binibining Sindangan 2026",
   start: "2026-11-22T19:00:00+08:00", // 7:00 PM Philippine Time
   end: "2026-11-22T22:00:00+08:00",   // assumed 3 hours; adjust if needed
-  location: "Sound Check Lounge and Bar, Sindangan, Zamboanga del Norte",
+  location: "3rd Floor, Municipal Building (beside the Mayor's Office), Sindangan, Zamboanga del Norte",
   description:
     "Sponsors' Meeting and Fellowship with Hon. Glona G. Labadlabad, Municipal Mayor of Sindangan.\n" +
     "Hosted by the Local Government of Sindangan and the Binibining Sindangan 2026 Committee.\n" +
@@ -434,7 +434,7 @@ const root = document.documentElement;
 
   function emailFallback(data) {
     const body = [
-      "RSVP for the Sponsors' Gathering (November 22, 2026, 7:00 PM, Sound Check Lounge and Bar)",
+      "RSVP for the Sponsors' Gathering (November 22, 2026, 7:00 PM, 3rd Floor, Municipal Building, Sindangan)",
       "",
       "Name: " + data.name,
       "Company / Organization: " + data.company,
