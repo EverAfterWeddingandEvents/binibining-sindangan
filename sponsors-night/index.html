@@ -26,8 +26,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="preload" as="image" href="../assets/logo.png">
   <link rel="stylesheet" href="../styles.css?v=11">
-  <link rel="stylesheet" href="night.css?v=1">
-  <script>document.documentElement.classList.add('js', 'sealed');</script>
+  <link rel="stylesheet" href="night.css?v=4">
+  <script>
+    document.documentElement.classList.add('js', 'sealed');
+    // Keep the address clean: /sponsors-night/index.html shows as /sponsors-night/
+    if (/^https?:$/.test(location.protocol) && /\/index\.html$/.test(location.pathname)) {
+      history.replaceState(null, '', location.pathname.replace(/index\.html$/, '') + location.search + location.hash);
+    }
+  </script>
 </head>
 <body>
   <canvas id="sparkles" aria-hidden="true"></canvas>
@@ -103,12 +109,15 @@
         </div>
       </div>
 
-      <ul class="programme reveal" aria-label="Programme">
-        <li>Sashing</li>
-        <li>Drawing of Lots</li>
-        <li>Contract Signing</li>
-        <li>Press Conference</li>
-      </ul>
+      <div class="programme reveal">
+        <p class="programme__label">Order of the Evening</p>
+        <ol>
+          <li><span class="programme__icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="5"/><path d="M12 6.2l.8 1.6 1.7.2-1.3 1.2.3 1.7-1.5-.8-1.5.8.3-1.7-1.3-1.2 1.7-.2z"/><path d="M8.8 12.6 7.5 21l4.5-2.6 4.5 2.6-1.3-8.4"/></svg></span><small aria-hidden="true">01</small><b>Sashing</b></li>
+          <li><span class="programme__icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M15 6v12" stroke-dasharray="1.5 2.5"/><path d="M7.5 10.5 9 9.5v5"/></svg></span><small aria-hidden="true">02</small><b>Drawing of Lots</b></li>
+          <li><span class="programme__icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 11h6M9 14h3"/><path d="M9 18c.9-1.8 1.6-1.8 2 0 .5-1.3 1.3-1.3 2.5 0h1.5"/></svg></span><small aria-hidden="true">03</small><b>Contract Signing</b></li>
+          <li><span class="programme__icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0"/><path d="M12 17v4M9 21h6"/></svg></span><small aria-hidden="true">04</small><b>Press Conference</b></li>
+        </ol>
+      </div>
 
       <div class="actions reveal">
         <a class="btn btn--outline" data-gcal="reveal" href="#" target="_blank" rel="noopener">Add to Google Calendar</a>
@@ -166,14 +175,6 @@
       <div class="actions reveal">
         <a class="btn btn--outline" data-gcal="night" href="#" target="_blank" rel="noopener">Add to Google Calendar</a>
         <button class="btn btn--outline" data-ics="night" type="button">Download Calendar File</button>
-      </div>
-
-      <p class="countdown__label reveal" id="countdownLabel"></p>
-      <div class="countdown reveal" id="nextCountdown" aria-live="off">
-        <div><b data-unit="days">--</b><span>Days</span></div>
-        <div><b data-unit="hours">--</b><span>Hours</span></div>
-        <div><b data-unit="minutes">--</b><span>Minutes</span></div>
-        <div><b data-unit="seconds">--</b><span>Seconds</span></div>
       </div>
     </section>
 
@@ -276,14 +277,8 @@
     </footer>
   </main>
 
-  <audio id="bgm" src="../assets/music.mp3" loop preload="metadata"></audio>
-  <button class="music" id="musicBtn" type="button" aria-pressed="false" aria-label="Play background music" title="Play music" hidden>
-    <svg class="music__note" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M9 3.5v10.1a3.4 3.4 0 1 0 2 3.1V8.2l7-1.6v5a3.4 3.4 0 1 0 2 3.1V1z"/></svg>
-    <span class="music__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-  </button>
-
-  <!-- The shared script runs the curtain, music, sparkles and scroll effects; night.js adds this page's two events. -->
-  <script src="../script.js?v=9" defer></script>
-  <script src="night.js?v=1" defer></script>
+  <!-- The shared script runs the curtain, sparkles and scroll effects; night.js adds this page's two events. -->
+  <script src="../script.js?v=10" defer></script>
+  <script src="night.js?v=2" defer></script>
 </body>
 </html>

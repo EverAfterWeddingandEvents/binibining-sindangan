@@ -179,6 +179,7 @@ const root = document.documentElement;
 (function music() {
   const audio = document.getElementById("bgm");
   const btn = document.getElementById("musicBtn");
+  if (!audio || !btn) return; // pages without music (e.g. /sponsors-night) skip this
   let available = false;
   let wanted = false; // the guest's choice: should music be on?
 

@@ -5,25 +5,75 @@
 
 .event + .event { padding-top: 12px; }
 
-/* Order of the evening */
+/* Order of the evening: a framed programme. A gold thread joins the four medallions,
+   running down the panel on phones and across it on wide screens. */
 .programme {
+  margin-top: 12px;
+  padding: 24px 20px 26px;
+  border: 1px solid rgba(233, 196, 106, .38);
+  border-radius: 14px;
+  background:
+    radial-gradient(90% 70% at 50% 0%, rgba(233, 196, 106, .1), transparent 70%),
+    linear-gradient(180deg, rgba(143, 15, 28, .38), rgba(18, 4, 10, .55));
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.programme__label {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin: 22px 0 0;
+  gap: 12px;
+  font-size: .66rem;
+  font-weight: 600;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--gold);
+}
+.programme__label::before, .programme__label::after { content: ""; flex: 0 1 44px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold)); }
+.programme__label::after { transform: scaleX(-1); }
+.programme ol {
+  position: relative;
+  display: grid;
+  gap: 18px;
+  width: fit-content;
+  margin: 22px auto 0;
   padding: 0;
   list-style: none;
 }
 .programme li {
-  padding: 8px 16px;
-  font-size: .8rem;
-  letter-spacing: .06em;
-  color: var(--gold-light);
-  border: 1px solid rgba(233, 196, 106, .45);
-  border-radius: 999px;
-  background: rgba(18, 4, 10, .5);
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 16px;
+  align-items: center;
+  min-width: 0;
+  text-align: left;
 }
+/* The thread between one medallion and the next */
+.programme li + li::before {
+  content: "";
+  position: absolute;
+  left: 26px;
+  top: -18px;
+  width: 1px;
+  height: 18px;
+  background: linear-gradient(180deg, var(--gold), rgba(233, 196, 106, .35));
+}
+.programme__icon {
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  color: var(--gold-light);
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 28%, #7a111d, #1c060b 75%);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .5), 0 0 0 4px rgba(233, 196, 106, .08), inset 0 1px 0 rgba(255, 255, 255, .16);
+}
+.programme small { align-self: end; font: 600 .62rem/1 var(--ui); letter-spacing: .26em; color: var(--gold); }
+.programme b { align-self: start; margin-top: 5px; font: 400 clamp(1.1rem, 4.6vw, 1.3rem)/1.2 var(--display); color: #fff; }
 
 /* Dress code */
 .dress {
@@ -59,9 +109,6 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .18);
 }
 
-.countdown__label { margin-top: 36px; text-align: center; font-size: .7rem; letter-spacing: .28em; text-transform: uppercase; color: var(--gold); }
-.countdown__label + .countdown { margin-top: 10px; }
-
 /* RSVP: one block per evening */
 .rsvp-event {
   grid-column: 1 / -1;
@@ -76,6 +123,12 @@
 .rsvp-event__title small { display: block; margin-top: 3px; font: 400 .74rem/1.4 var(--ui); color: var(--muted); }
 
 @media (min-width: 560px) {
+  .programme { padding: 28px 16px 30px; }
+  .programme ol { grid-template-columns: repeat(4, 1fr); gap: 10px; width: auto; margin-top: 26px; }
+  .programme li { display: flex; flex-direction: column; text-align: center; }
+  .programme li + li::before { left: calc(-50% + 17px); top: 27px; width: calc(100% - 44px); height: 1px; background: var(--gold); opacity: .6; }
+  .programme small { align-self: center; margin-top: 14px; }
+  .programme b { align-self: center; margin-top: 6px; font-size: 1.1rem; }
   .swatches { grid-template-columns: repeat(6, 1fr); max-width: 560px; }
 }
 @media (min-width: 820px) {

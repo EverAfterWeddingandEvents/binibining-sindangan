@@ -29,43 +29,6 @@ const EVENTS = {
   },
 };
 
-/* ---- Countdown to whichever evening comes next ---- */
-(function countdown() {
-  const box = document.getElementById("nextCountdown");
-  const label = document.getElementById("countdownLabel");
-  const cells = {};
-  box.querySelectorAll("[data-unit]").forEach((el) => (cells[el.dataset.unit] = el));
-  const pad = (n) => String(n).padStart(2, "0");
-  const list = Object.values(EVENTS);
-
-  function tick() {
-    const now = Date.now();
-    const next = list.find((e) => now < new Date(e.end).getTime());
-    if (!next) {
-      label.hidden = true;
-      box.classList.add("is-over");
-      box.textContent = "Thank you for joining us";
-      clearInterval(timer);
-      return;
-    }
-    const diff = new Date(next.start).getTime() - now;
-    if (diff <= 0) {
-      label.textContent = next.name;
-      Object.values(cells).forEach((el) => (el.textContent = "00"));
-      cells.days.textContent = "0";
-      return;
-    }
-    label.textContent = "Until the " + next.name;
-    const s = Math.floor(diff / 1000);
-    cells.days.textContent = String(Math.floor(s / 86400));
-    cells.hours.textContent = pad(Math.floor((s % 86400) / 3600));
-    cells.minutes.textContent = pad(Math.floor((s % 3600) / 60));
-    cells.seconds.textContent = pad(s % 60);
-  }
-  const timer = setInterval(tick, 1000);
-  tick();
-})();
-
 /* ---- Add to calendar, one pair of buttons per evening ---- */
 (function calendar() {
   const stamp = (iso) => new Date(iso).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
