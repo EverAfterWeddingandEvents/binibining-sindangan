@@ -271,6 +271,7 @@ const root = document.documentElement;
 /* ---- Countdown ---- */
 (function countdown() {
   const box = document.getElementById("countdown");
+  if (!box) return; // pages with their own countdown (e.g. /sponsors-night) skip this one
   const target = new Date(EVENT.start).getTime();
   const end = new Date(EVENT.end).getTime();
   const cells = {};
@@ -309,6 +310,7 @@ const root = document.documentElement;
 
 /* ---- Add to calendar ---- */
 (function calendar() {
+  if (!document.getElementById("gcalBtn")) return;
   const stamp = (iso) => new Date(iso).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
   const dates = stamp(EVENT.start) + "/" + stamp(EVENT.end);
 
@@ -352,6 +354,7 @@ const root = document.documentElement;
 /* ---- RSVP form ---- */
 (function rsvp() {
   const form = document.getElementById("rsvpForm");
+  if (!form) return;
   const status = document.getElementById("formStatus");
   const submitBtn = document.getElementById("submitBtn");
   const seatsField = document.getElementById("seatsField");

@@ -1,6 +1,7 @@
 /**
  * Form receiver for the Binibining Sindangan 2026 website. One script, one Google Sheet:
  *   - Sponsors' Gathering RSVPs            -> the "RSVPs" tab
+ *   - Reveal of the Top 20 & Sponsors' Night RSVPs (/sponsors-night) -> the "Dec 1 & 15 RSVPs" tab
  *   - Top 20 candidate forms (/candidates) -> the "Candidates" tab (created by the first answer)
  *     Talent music and LED backdrops arrive as links the candidates paste in.
  *
@@ -23,6 +24,13 @@
 /* ---- Sponsors' Gathering RSVPs ---- */
 const SHEET_NAME = "RSVPs";
 const HEADERS = ["Received", "Name", "Company / Organization", "Mobile", "Email", "Attending", "Seats", "Message"];
+
+/* ---- Reveal of the Top 20 (Dec 1) & Sponsors' Night (Dec 15) RSVPs ---- */
+const EVENTS_SHEET = "Dec 1 & 15 RSVPs";
+const EVENTS_HEADERS = [
+  "Received", "Name", "Company / Organization", "Mobile", "Email",
+  "Dec 1 Reveal", "Dec 1 Seats", "Dec 15 Sponsors' Night", "Dec 15 Seats", "Message",
+];
 
 /* ---- Top 20 candidates ---- */
 const CANDIDATE_SHEET = "Candidates";
@@ -60,6 +68,7 @@ function doPost(e) {
   try {
     const p = (e && e.parameter) || {};
     if (p.form === "candidate") return reply(saveCandidate(p));
+    if (p.form === "events") return reply(saveEventsRsvp(p));
     return reply(saveRsvp(p));
   } catch (err) {
     return reply({ ok: false, error: String(err) });
@@ -92,6 +101,39 @@ function saveRsvp(p) {
       clean(p.message, 600),
     ]);
     return { ok: true };
+  });
+}
+
+/* ---- Reveal of the Top 20 & Sponsors' Night RSVP ---- */
+function saveEventsRsvp(p) {
+  if (!p.name || !p.company) return { ok: false, error: "Missing name or company" };
+  const seats = function (answer, count) {
+    return answer === "No" ? 0 : Math.min(10, Math.max(1, parseInt(count, 10) || 1));
+  };
+  return withLock(function () {
+    const book = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = book.getSheetByName(EVENTS_SHEET) || book.insertSheet(EVENTS_SHEET);
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(EVENTS_HEADERS);
+      sheet.getRange(1, 1, 1, EVENTS_HEADERS.length).setFontWeight("bold");
+      sheet.setFrozenRows(1);
+      // Plain text keeps a mobile number's leading zero.
+      sheet.getRange(2, 4, sheet.getMaxRows() - 1, 1).setNumberFormat("@");
+    }
+    sheet.appendRow([
+      new Date(),
+      clean(p.name, 120),
+      clean(p.company, 160),
+      clean(p.phone, 30),
+      clean(p.email, 160),
+      p.reveal === "No" ? "No" : "Yes",
+      seats(p.reveal, p.revealSeats),
+      p.night === "No" ? "No" : "Yes",
+      seats(p.night, p.nightSeats),
+      clean(p.message, 600),
+    ]);
+    // The website checks for this, so it can tell an updated script from an old one.
+    return { ok: true, form: "events" };
   });
 }
 
