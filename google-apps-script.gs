@@ -2,6 +2,7 @@
  * Form receiver for the Binibining Sindangan 2026 website. One script, one Google Sheet:
  *   - Sponsors' Gathering RSVPs            -> the "RSVPs" tab
  *   - Reveal of the Top 20 & Sponsors' Night RSVPs (/sponsors-night) -> the "Dec 1 & 15 RSVPs" tab
+ *   - Preliminary & Coronation Night RSVPs (/coronation/guest)       -> the "Dec 17 & 20 RSVPs" tab
  *   - Top 20 candidate forms (/candidates) -> the "Candidates" tab (created by the first answer)
  *     Talent music and LED backdrops arrive as links the candidates paste in.
  *
@@ -30,6 +31,15 @@ const EVENTS_SHEET = "Dec 1 & 15 RSVPs";
 const EVENTS_HEADERS = [
   "Received", "Name", "Company / Organization", "Mobile", "Email",
   "Dec 1 Reveal", "Dec 1 Seats", "Dec 15 Sponsors' Night", "Dec 15 Seats", "Message",
+];
+
+/* ---- Preliminary Night (Dec 17) & Coronation Night (Dec 20) RSVPs ----
+   Preliminary Night is open to all, so it only records who is coming. Coronation Night
+   is by ticket, so it also records how many seats the guest asks for. */
+const FINALS_SHEET = "Dec 17 & 20 RSVPs";
+const FINALS_HEADERS = [
+  "Received", "Name", "Company / Organization / Title", "Mobile", "Email",
+  "Dec 17 Preliminary", "Dec 20 Coronation", "Dec 20 Seats", "Message",
 ];
 
 /* ---- Top 20 candidates ---- */
@@ -69,6 +79,7 @@ function doPost(e) {
     const p = (e && e.parameter) || {};
     if (p.form === "candidate") return reply(saveCandidate(p));
     if (p.form === "events") return reply(saveEventsRsvp(p));
+    if (p.form === "finals") return reply(saveFinalsRsvp(p));
     return reply(saveRsvp(p));
   } catch (err) {
     return reply({ ok: false, error: String(err) });
@@ -134,6 +145,37 @@ function saveEventsRsvp(p) {
     ]);
     // The website checks for this, so it can tell an updated script from an old one.
     return { ok: true, form: "events" };
+  });
+}
+
+/* ---- Preliminary & Coronation Night RSVP ---- */
+function saveFinalsRsvp(p) {
+  if (!p.name || !p.company) return { ok: false, error: "Missing name or company" };
+  const preliminary = p.preliminary === "No" ? "No" : "Yes";
+  const coronation = p.coronation === "No" ? "No" : "Yes";
+  return withLock(function () {
+    const book = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = book.getSheetByName(FINALS_SHEET) || book.insertSheet(FINALS_SHEET);
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(FINALS_HEADERS);
+      sheet.getRange(1, 1, 1, FINALS_HEADERS.length).setFontWeight("bold");
+      sheet.setFrozenRows(1);
+      // Plain text keeps a mobile number's leading zero.
+      sheet.getRange(2, 4, sheet.getMaxRows() - 1, 1).setNumberFormat("@");
+    }
+    sheet.appendRow([
+      new Date(),
+      clean(p.name, 120),
+      clean(p.company, 160),
+      clean(p.phone, 30),
+      clean(p.email, 160),
+      preliminary,
+      coronation,
+      coronation === "No" ? 0 : Math.min(10, Math.max(1, parseInt(p.coronationSeats, 10) || 1)),
+      clean(p.message, 600),
+    ]);
+    // The website checks for this, so it can tell an updated script from an old one.
+    return { ok: true, form: "finals" };
   });
 }
 

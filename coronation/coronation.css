@@ -1,0 +1,39 @@
+/* =========================================================
+   Binibining Sindangan 2026 — Preliminary & Coronation Night
+   Only what this page adds on top of ../styles.css and
+   ../sponsors-night/night.css
+   ========================================================= */
+
+/* A long venue name must wrap inside its card, never push it wider */
+.card { min-width: 0; }
+.card__value { overflow-wrap: anywhere; }
+
+/* Admission note for the ticketed night */
+.ticket {
+  margin-top: 22px;
+  padding: clamp(22px, 5vw, 34px);
+  text-align: center;
+  border: 1px dashed rgba(233, 196, 106, .55);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(143, 15, 28, .3), rgba(18, 4, 10, .6));
+}
+.ticket h3 { margin: 6px 0 12px; font: 400 clamp(1.4rem, 6vw, 1.9rem)/1.2 var(--display); }
+.ticket p { max-width: 50ch; margin: 0 auto; color: var(--text); font-size: .95rem; }
+.ticket p + p { margin-top: .7em; }
+
+/* RSVP: the Coronation Night seat count and the small print under it */
+.rsvp-event__extra { display: grid; gap: 14px; }
+.rsvp-event__hint { grid-column: 1 / -1; color: var(--muted); font-size: .78rem; line-height: 1.5; }
+
+/* Three stops in the order of the evening instead of four */
+@media (min-width: 560px) {
+  .programme--three ol { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Three cards instead of four (the public page shows no admission card for Coronation Night):
+   the venue takes the full row on phones, and the three share the row on wide screens. */
+.cards--three .card:last-child { grid-column: 1 / -1; }
+@media (min-width: 820px) {
+  .cards--three { grid-template-columns: repeat(3, 1fr); }
+  .cards--three .card:last-child { grid-column: auto; }
+}
